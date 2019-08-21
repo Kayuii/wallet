@@ -42,6 +42,7 @@ RUN mkdir -p /opt/digibyte \
   && ./configure --with-gui=no --enable-hardening --prefix=`pwd`/depends/x86_64-pc-linux-gnu \
   && make -j$ecores \
   && cp /opt/digibyte/digibyte/src/digibyted /opt/blockchain/digibyted \
+  && cp /opt/digibyte/digibyte/src/digibyte-cli /opt/blockchain/digibyte-cli \
   && rm -rf /opt/digibyte/
 
 # Write default digibyte.conf (can be overridden on commandline)
