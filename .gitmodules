@@ -1,0 +1,9 @@
+[submodule "block/dockerimages"]
+	path = block/dockerimages
+	url = https://github.com/blocknetdx/dockerimages.git
+[submodule "sia"]
+	path = sc/docker-siad
+	url = https://github.com/radmen/docker-siad.git
+[submodule "bsv/docker-bitcoin"]
+	path = bsv/docker-bitcoin
+	url = https://github.com/zquestz/docker-bitcoin.git
