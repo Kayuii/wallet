@@ -1,6 +1,3 @@
-# Build via docker:
-# docker build --build-arg cores=8 -t blocknetdx/lpc:latest .
-
 FROM ubuntu:xenial
 
 RUN apt update \

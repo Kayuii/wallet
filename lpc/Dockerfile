@@ -3,7 +3,7 @@
 
 FROM ubuntu:xenial
 
-ARG cores=1
+ARG cores=2
 ENV ecores=$cores
 ENV LPC_VER=v1.0.1.0
 

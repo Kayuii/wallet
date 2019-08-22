@@ -3,7 +3,7 @@
 
 FROM ubuntu:xenial
 
-ARG cores=1
+ARG cores=4
 ENV ecores=$cores
 ENV DGB_VER=v7.17.2
 
