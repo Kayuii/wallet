@@ -7,3 +7,9 @@
 [submodule "bsv/docker-bitcoin"]
 	path = bsv/docker-bitcoin
 	url = https://github.com/zquestz/docker-bitcoin.git
+[submodule "usdt/docker_omnicored"]
+	path = usdt/docker_omnicored
+	url = https://github.com/mpugach/docker_omnicored.git
+[submodule "bch/docker-bitcoin"]
+	path = bch/docker-bitcoin
+	url = https://github.com/zquestz/docker-bitcoin.git
