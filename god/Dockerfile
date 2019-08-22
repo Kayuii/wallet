@@ -22,9 +22,9 @@ RUN add-apt-repository ppa:bitcoin/bitcoin \
      libminiupnpc-dev libzmq3-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# fix https://github.com/BitcoinGod/BitcoinGod/issues/1
-RUN apt-get install -y libssl1.0-dev \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# fix https://github.com/BitcoinGod/BitcoinGod/issues/1 for ubuntu 18.04
+# RUN apt install -y --no-install-recommends libssl1.0-dev \
+#   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Build source
 RUN mkdir -p /opt/bitcoingod \
