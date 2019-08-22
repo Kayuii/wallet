@@ -1,3 +1,5 @@
+Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch lightpaycoin-v1.0.1.0
+
 Official Blocknet Bitcoin Images
 =================================
 

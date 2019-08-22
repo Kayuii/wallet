@@ -1,3 +1,4 @@
+# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch digibyte-v6.16.5.1
 # Build via docker:
 # docker build --build-arg cores=8 -t blocknetdx/dgb:latest .
 

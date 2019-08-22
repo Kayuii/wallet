@@ -1,12 +1,8 @@
-# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch lightpaycoin-v1.0.1.0
-# Build via docker:
-# docker build --build-arg cores=8 -t blocknetdx/lpc:latest .
-
 FROM ubuntu:xenial
 
 ARG cores=4
 ENV ecores=$cores
-ENV LPC_VER=v1.0.1.0
+ENV GOD_VER=v0.1.5.0
 
 RUN apt update \
   && apt install -y --no-install-recommends \
@@ -26,15 +22,19 @@ RUN add-apt-repository ppa:bitcoin/bitcoin \
      libminiupnpc-dev libzmq3-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# fix https://github.com/BitcoinGod/BitcoinGod/issues/1
+RUN apt-get install -y libssl1.0-dev \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Build source
-RUN mkdir -p /opt/lightpaycoin \
+RUN mkdir -p /opt/bitcoingod \
   && mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.lightpaycoin \
-  && cd /opt/lightpaycoin \
-  && mkdir lightpaycoin \
-  && git clone --depth 1 --branch $LPC_VER https://github.com/lpcproject/LightPayCoin lightpaycoin \
-  && cd /opt/lightpaycoin/lightpaycoin/ \
+  && ln -s /opt/blockchain/config /root/.bitcoingod \
+  && cd /opt/bitcoingod \
+  && mkdir bitcoingod \
+  && git clone --depth 1 --branch $GOD_VER https://github.com/bitcoingod/bitcoingod bitcoingod \
+  && cd /opt/bitcoingod/bitcoingod/ \
   && cd depends \
   && make -j$ecores NO_QT=1 \
   && cd .. \
@@ -42,17 +42,17 @@ RUN mkdir -p /opt/lightpaycoin \
   && ./autogen.sh \
   && ./configure --with-gui=no --enable-hardening --prefix=`pwd`/depends/x86_64-pc-linux-gnu \
   && make -j$ecores \
-  && cp /opt/lightpaycoin/lightpaycoin/src/lightpaycoind /opt/blockchain/lightpaycoind \
-  && cp /opt/lightpaycoin/lightpaycoin/src/lightpaycoin-cli /opt/blockchain/lightpaycoin-cli \
-  && rm -rf /opt/lightpaycoin/
+  && cp /opt/bitcoingod/bitcoingod/src/bitcoingodd /opt/blockchain/bitcoingodd \
+  && cp /opt/bitcoingod/bitcoingod/src/bitcoingod-cli /opt/blockchain/bitcoingod-cli \
+  && rm -rf /opt/bitcoingod/
 
-# Write default lightpaycoin.conf (can be overridden on commandline)
+# Write default bitcoingod.conf (can be overridden on commandline)
 RUN echo "datadir=/opt/blockchain/data  \n\
                                         \n\
 dbcache=256                             \n\
 maxmempool=512                          \n\
-port=39797                               \n\
-rpcport=39798                          \n\
+port=8885                               \n\
+rpcport=8886                            \n\
 listen=1                                \n\
 server=1                                \n\
 logtimestamps=1                         \n\
@@ -60,12 +60,12 @@ logips=1                                \n\
 rpcthreads=8                            \n\
 rpcallowip=127.0.0.1                    \n\
 rpctimeout=15                           \n\
-rpcclienttimeout=15                     \n" > /opt/blockchain/config/lightpaycoin.conf
+rpcclienttimeout=15                     \n" > /opt/blockchain/config/bitcoingod.conf
 
 WORKDIR /opt/blockchain/
 VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 39797 39798  18332  19332
+EXPOSE 8885 8886 18885 18886
 
-CMD ["/opt/blockchain/lightpaycoind", "-daemon=0"]
+CMD ["/opt/blockchain/bitcoingodd", "-daemon=0"]
