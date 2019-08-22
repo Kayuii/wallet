@@ -2,29 +2,11 @@
 # Build via docker:
 # docker build --build-arg cores=8 -t blocknetdx/lpc:latest .
 
-FROM ubuntu:xenial
+FROM kayuii/ubuntu:xenial
 
 ARG cores=4
 ENV ecores=$cores
 ENV LPC_VER=v1.0.1.0
-
-RUN apt update \
-  && apt install -y --no-install-recommends \
-     software-properties-common \
-     ca-certificates \
-     wget curl git python vim \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     curl build-essential libtool autotools-dev automake \
-     python3 bsdmainutils cmake libevent-dev autoconf automake \
-     pkg-config libssl-dev libboost-system-dev libboost-filesystem-dev \
-     libboost-chrono-dev libboost-program-options-dev libboost-test-dev \
-     libboost-thread-dev libdb4.8-dev libdb4.8++-dev libgmp-dev \
-     libminiupnpc-dev libzmq3-dev \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Build source
 RUN mkdir -p /opt/lightpaycoin \
@@ -36,6 +18,7 @@ RUN mkdir -p /opt/lightpaycoin \
   && git clone --depth 1 --branch $LPC_VER https://github.com/lpcproject/LightPayCoin lightpaycoin \
   && cd /opt/lightpaycoin/lightpaycoin/ \
   && cd depends \
+  && chmod +x config.*
   && make -j$ecores NO_QT=1 \
   && cd .. \
   && chmod +x ./autogen.sh \
