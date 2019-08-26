@@ -18,7 +18,7 @@ RUN mkdir -p /opt/lightpaycoin \
   && git clone --depth 1 --branch $LPC_VER https://github.com/lpcproject/LightPayCoin lightpaycoin \
   && cd /opt/lightpaycoin/lightpaycoin/ \
   && cd depends \
-  && chmod +x config.*
+  && chmod +x config.* \
   && make -j$ecores NO_QT=1 \
   && cd .. \
   && chmod +x ./autogen.sh \
