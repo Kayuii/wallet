@@ -1,6 +1,7 @@
 FROM alpine:3.8
 ENV LANG=C.UTF-8
 ENV TZ Asia/Shanghai
+# apk add libstdc++ icu libintl openssl for net core base with alpine
 RUN apk --update add --no-cache --virtual .build-deps tzdata wget ca-certificates libstdc++ icu libintl openssl && \
     cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     echo 'Asia/Shanghai' > /etc/timezone && \
@@ -41,3 +42,5 @@ RUN apk --update add --no-cache --virtual .build-deps tzdata wget ca-certificate
     mkdir -p /app
 
 WORKDIR /app
+ENV ASPNETCORE_ENVIRONMENT=Production
+
