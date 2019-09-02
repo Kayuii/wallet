@@ -10,7 +10,7 @@ RUN mkdir -p $BITCOIN_ROOT \
     && mkdir -p $BDB_PREFIX \
     && mkdir -p $BITCOIN_ROOT/config \
     && mkdir -p $BITCOIN_DATA \
-    && ln -s $BITCOIN_ROOT/config /root/.bitcoin \
+    && ln -s $BITCOIN_ROOT/config /root/.bitcoin 
 
 WORKDIR /opt/blockchain/
 
