@@ -50,7 +50,7 @@ RUN cd $BITCOIN_REPO && \
     strip $BITCOIN_ROOT/lib/libbitcoinconsensus.so.0.0.0 && \
     apk del git autoconf automake g++ make file
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY ./usdt/docker-entrypoint.sh /entrypoint.sh
 
 RUN chmod u+x /entrypoint.sh
 
