@@ -61,7 +61,7 @@ COPY ./usdt/docker-entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
 
 # Write default bitcoin.conf (can be overridden on commandline)
-RUN echo "datadir=${BITCOIN_ROOT}/data  \n\
+RUN echo "datadir=${BITCOIN_DATA}  \n\
                                         \n\
 dbcache=256                             \n\
 maxmempool=512                          \n\
@@ -80,7 +80,7 @@ rpctimeout=15                           \n\
 rpcclienttimeout=15                     \n" > $BITCOIN_CONF/bitcoin.conf
 
 
-VOLUME ["${BITCOIN_CONF}", "${BITCOIN_ROOT}/data"]
+VOLUME ["${BITCOIN_CONF}", "${BITCOIN_DATA}"]
 
 # Port, RPC, Test Port, Test RPC
 EXPOSE 8332 8333 18332 18333 18444
