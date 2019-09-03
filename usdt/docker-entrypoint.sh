@@ -13,7 +13,7 @@ if [[ $(echo "$1" | cut -c1) = "-" ]] || [[ "$1" = "omnicored" ]]; then
 
   echo "$0: setting data directory to $BITCOIN_DATA"
 
-  set -- "$@" -datadir="$BITCOIN_DATA"
+  set -- "$@" -datadir="$BITCOIN_DATA" -conf="$BITCOIN_CONF/bitcoin.conf"
 fi
 
 if [[ "$1" = "omnicored" ]] || [[ "$1" = "omnicore-cli" ]] || [[ "$1" = "bitcoin-tx" ]]; then

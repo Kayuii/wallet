@@ -3,14 +3,15 @@ FROM alpine:3.8
 LABEL maintainer="kayuii (577738@qq.com)"
 
 
-ENV BITCOIN_ROOT=/opt/blockchain/
+ENV BITCOIN_ROOT=/opt/blockchain
 ENV BDB_PREFIX="${BITCOIN_ROOT}/db4" BITCOIN_REPO="${BITCOIN_ROOT}/repo" PATH="${BITCOIN_ROOT}/bin:$PATH" BITCOIN_DATA="${BITCOIN_ROOT}/data"
+ENV BITCOIN_CONF="${BITCOIN_ROOT}/config"
 
 RUN mkdir -p $BITCOIN_ROOT \
     && mkdir -p $BDB_PREFIX \
-    && mkdir -p $BITCOIN_ROOT/config \
+    && mkdir -p $BITCOIN_CONF \
     && mkdir -p $BITCOIN_DATA \
-    && ln -s $BITCOIN_ROOT/config /root/.bitcoin 
+    && ln -s $BITCOIN_CONF /root/.bitcoin 
 
 WORKDIR /opt/blockchain/
 
@@ -76,10 +77,10 @@ logips=1                                \n\
                                         \n\
 rpcallowip=127.0.0.1                    \n\
 rpctimeout=15                           \n\
-rpcclienttimeout=15                     \n" > $BITCOIN_ROOT/config/bitcoin.conf
+rpcclienttimeout=15                     \n" > $BITCOIN_CONF/bitcoin.conf
 
 
-VOLUME ["${BITCOIN_ROOT}/config", "${BITCOIN_ROOT}/data"]
+VOLUME ["${BITCOIN_CONF}", "${BITCOIN_ROOT}/data"]
 
 # Port, RPC, Test Port, Test RPC
 EXPOSE 8332 8333 18332 18333 18444
