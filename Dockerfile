@@ -4,7 +4,7 @@ FROM ubuntu:bionic
 
 ARG cores=4
 ENV ecores=$cores
-ENV BLOCK_VER=3.13.2
+ENV BLOCK_VER=3.14.0
 
 RUN apt update \
   && apt install -y --no-install-recommends \
