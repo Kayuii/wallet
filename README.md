@@ -1,1 +1,1 @@
-# wallet
+# adoptopenjdk/openjdk11-openj9:alpine-slim base docker images with timezone of Asia/Shanghai
