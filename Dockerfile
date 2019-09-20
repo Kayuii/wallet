@@ -1,56 +1,20 @@
-# Build via docker:
-# docker build --build-arg cores=8 -t blocknetdx/servicenode:3.14.0 .
-FROM ubuntu:bionic as builder
+FROM debian:stretch-slim as builder
 
-ARG cores=4
-ENV ecores=$cores
-ENV BLOCK_VER=3.14.0
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
+	&& rm -rf /var/lib/apt/lists/*
 
-RUN apt update \
-  && apt install -y --no-install-recommends \
-     software-properties-common \
-     ca-certificates \
-     wget curl git python vim \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ENV BITCOIN_VERSION 3.14.0
+ENV BITCOIN_URL https://github.com/blocknetdx/blocknet/releases/download/${BITCOIN_VERSION}/blocknetdx-3.14.0-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_SHA256 24a185429a2432ee9f62331c17bc76e29a3cb9818c5ae3e207a05de92af8dd25
 
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     build-essential libtool autotools-dev bsdmainutils \
-     libevent-dev autoconf automake pkg-config libssl-dev \
-     libdb4.8-dev libdb4.8++-dev python-setuptools cmake \
-     libcap-dev \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# gcc 8
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     g++-8-multilib gcc-8-multilib binutils-gold \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-ENV PROJECTDIR=/opt/blocknetdx/blocknet
-ENV BASEPREFIX=$PROJECTDIR/depends
-ENV HOST=x86_64-pc-linux-gnu
-
-# Copy source files
-RUN mkdir -p /opt/blocknetdx \
-  && cd /opt/blocknetdx \
-  && git clone --depth 1 --branch $BLOCK_VER https://github.com/blocknetdx/blocknet.git
-
-# Build source
-RUN mkdir -p /opt/blockchain/config \
-  && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.blocknetdx \
-  && cd $BASEPREFIX \
-  && make -j$ecores && make install \
-  && cd $PROJECTDIR \
-  && chmod +x ./autogen.sh; sync \
-  && ./autogen.sh \
-  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
-  && echo "Building with cores: $ecores" \
-  && make -j$ecores \
-  && make install
+RUN set -ex \
+	&& cd /tmp \
+	&& wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
+	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
+	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt \
+	&& rm -rf /tmp/*
 
 FROM debian:stretch-slim 
 
@@ -62,13 +26,16 @@ RUN set -ex \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_DATA=/opt/blockchain
-ENV BITCOIN_PREFIX=/opt/blocknetdx
-
-RUN mkdir -p ${BITCOIN_DATA}/config \
-  && mkdir -p ${BITCOIN_DATA}/data \
-  && ln -s ${BITCOIN_DATA}/config /root/.blocknetdx \
 
 COPY --from=builder /bin/blocknetdx* /bin
+
+RUN mkdir -p ${BITCOIN_DATA}/config \
+	&& mkdir -p ${BITCOIN_DATA}/data \
+	# && ln -s ${BITCOIN_DATA}/config /root/.blocknetdx \
+	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetdx \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetdx \
+	&& chmod a+x /bin/blocknetdx*
 
 # Write default blocknetdx.conf (can be overridden on commandline)
 RUN echo "datadir=${BITCOIN_DATA}/data    \n\
@@ -91,6 +58,9 @@ rpcclienttimeout=15" > ${BITCOIN_DATA}/config/blocknetdx.conf
 
 WORKDIR ${BITCOIN_DATA}
 VOLUME ["${BITCOIN_DATA}/config", "${BITCOIN_DATA}/data"]
+
+COPY docker-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
 EXPOSE 41412 41414 41474 41419
