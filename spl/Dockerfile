@@ -52,26 +52,16 @@ RUN mkdir -p /opt/blockchain/config \
   && make -j$ecores \
   && make install
 
-FROM debian:stretch-slim 
+FROM ubuntu:bionic 
 
-RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
-
-RUN set -ex \
-	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends gosu \
-	&& rm -rf /var/lib/apt/lists/*
-
-ENV BITCOIN_DATA=/opt/blockchain
-ENV BITCOIN_PREFIX=/opt/blocknetdx
-
-RUN mkdir -p ${BITCOIN_DATA}/config \
-  && mkdir -p ${BITCOIN_DATA}/data \
-  && ln -s ${BITCOIN_DATA}/config /root/.blocknetdx \
+RUN mkdir -p /opt/blockchain/config \
+  && mkdir -p /opt/blockchain/data \
+  && ln -s /opt/blockchain/config /root/.blocknetdx \
 
 COPY --from=builder /bin/blocknetdx* /bin
 
 # Write default blocknetdx.conf (can be overridden on commandline)
-RUN echo "datadir=${BITCOIN_DATA}/data    \n\
+RUN echo "datadir=/opt/blockchain/data    \n\
                                           \n\
 dbcache=256                               \n\
 maxmempool=512                            \n\
@@ -87,10 +77,10 @@ logips=1                                  \n\
                                           \n\
 rpcallowip=127.0.0.1                      \n\
 rpctimeout=15                             \n\
-rpcclienttimeout=15" > ${BITCOIN_DATA}/config/blocknetdx.conf
+rpcclienttimeout=15" > /opt/blockchain/config/blocknetdx.conf
 
-WORKDIR ${BITCOIN_DATA}
-VOLUME ["${BITCOIN_DATA}/config", "${BITCOIN_DATA}/data"]
+WORKDIR /opt/blockchain/
+VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
 
 # Port, RPC, Test Port, Test RPC
 EXPOSE 41412 41414 41474 41419
