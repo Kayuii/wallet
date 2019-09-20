@@ -26,41 +26,16 @@ RUN set -ex \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_DATA=/opt/blockchain/data
-ENV BITCOIN_CONF=/opt/blockchain/config
 
 COPY --from=builder /usr/local/bin/blocknetdx* /usr/local/bin/
 
-RUN mkdir -p ${BITCOIN_CONF} \
-	&& mkdir -p ${BITCOIN_DATA} \
-	# && ln -s ${BITCOIN_DATA}/config /root/.blocknetdx \
+RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& chown -R bitcoin:bitcoin "$BITCOIN_CONF" \
-	&& ln -sfn "$BITCOIN_CONF" /home/bitcoin/.blocknetdx \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetdx 
-	# && chmod a+x /usr/local/bin/blocknetdx*
-
-# Write default blocknetdx.conf (can be overridden on commandline)
-RUN echo "datadir=${BITCOIN_DATA}         \n\
-                                          \n\
-dbcache=256                               \n\
-maxmempool=512                            \n\
-maxmempoolxbridge=128                     \n\
-                                          \n\
-port=41412    # testnet: 41474            \n\
-rpcport=41414 # testnet: 41419            \n\
-                                          \n\
-listen=1                                  \n\
-server=1                                  \n\
-logtimestamps=1                           \n\
-logips=1                                  \n\
-                                          \n\
-rpcallowip=127.0.0.1                      \n\
-rpctimeout=15                             \n\
-rpcclienttimeout=15" > ${BITCOIN_CONF}/blocknetdx.conf \
-&& chown bitcoin:bitcoin ${BITCOIN_CONF}/blocknetdx.conf
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetdx \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetdx
 
 WORKDIR ${BITCOIN_DATA}
-VOLUME ["${BITCOIN_CONF}", "${BITCOIN_DATA}"]
+VOLUME ["${BITCOIN_DATA}"]
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
