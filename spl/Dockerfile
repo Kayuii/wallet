@@ -82,6 +82,9 @@ rpcclienttimeout=15" > /opt/blockchain/config/blocknetdx.conf
 WORKDIR /opt/blockchain/
 VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
 
+COPY docker-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Port, RPC, Test Port, Test RPC
 EXPOSE 41412 41414 41474 41419
 
