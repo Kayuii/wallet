@@ -16,9 +16,6 @@ RUN set -ex \
 	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt \
 	&& rm -rf /tmp/*
 
-RUN ls -alh /usr/local
-RUN ls -alh /usr/local/bin
-
 FROM debian:stretch-slim 
 
 RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
