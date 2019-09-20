@@ -6,7 +6,7 @@ RUN set -ex \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_VERSION 3.14.0
-ENV BITCOIN_URL https://github.com/blocknetdx/blocknet/releases/download/${BITCOIN_VERSION}/blocknetdx-3.14.0-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_URL https://github.com/blocknetdx/blocknet/releases/download/v3.14.0/blocknetdx-3.14.0-x86_64-linux-gnu.tar.gz
 ENV BITCOIN_SHA256 24a185429a2432ee9f62331c17bc76e29a3cb9818c5ae3e207a05de92af8dd25
 
 RUN set -ex \
@@ -15,6 +15,9 @@ RUN set -ex \
 	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
 	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt \
 	&& rm -rf /tmp/*
+
+RUN ls -alh /usr/local
+RUN ls -alh /usr/local/bin
 
 FROM debian:stretch-slim 
 
@@ -25,20 +28,22 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends gosu \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_DATA=/opt/blockchain
+ENV BITCOIN_DATA=/opt/blockchain/data
+ENV BITCOIN_CONF=/opt/blockchain/config
 
-COPY --from=builder /bin/blocknetdx* /bin
+COPY --from=builder /usr/local/bin/blocknetdx* /usr/local/bin/
 
-RUN mkdir -p ${BITCOIN_DATA}/config \
-	&& mkdir -p ${BITCOIN_DATA}/data \
+RUN mkdir -p ${BITCOIN_CONF} \
+	&& mkdir -p ${BITCOIN_DATA} \
 	# && ln -s ${BITCOIN_DATA}/config /root/.blocknetdx \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetdx \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetdx \
-	&& chmod a+x /bin/blocknetdx*
+	&& chown -R bitcoin:bitcoin "$BITCOIN_CONF" \
+	&& ln -sfn "$BITCOIN_CONF" /home/bitcoin/.blocknetdx \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetdx 
+	# && chmod a+x /usr/local/bin/blocknetdx*
 
 # Write default blocknetdx.conf (can be overridden on commandline)
-RUN echo "datadir=${BITCOIN_DATA}/data    \n\
+RUN echo "datadir=${BITCOIN_DATA}         \n\
                                           \n\
 dbcache=256                               \n\
 maxmempool=512                            \n\
@@ -54,10 +59,11 @@ logips=1                                  \n\
                                           \n\
 rpcallowip=127.0.0.1                      \n\
 rpctimeout=15                             \n\
-rpcclienttimeout=15" > ${BITCOIN_DATA}/config/blocknetdx.conf
+rpcclienttimeout=15" > ${BITCOIN_CONF}/blocknetdx.conf \
+&& chown bitcoin:bitcoin ${BITCOIN_CONF}/blocknetdx.conf
 
 WORKDIR ${BITCOIN_DATA}
-VOLUME ["${BITCOIN_DATA}/config", "${BITCOIN_DATA}/data"]
+VOLUME ["${BITCOIN_CONF}", "${BITCOIN_DATA}"]
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
