@@ -34,10 +34,11 @@ RUN mkdir -p ${BITCOIN_DATA} \
 	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetdx \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetdx
 
+COPY ./releases/docker-entrypoint.sh /entrypoint.sh
+
 WORKDIR ${BITCOIN_DATA}
 VOLUME ["${BITCOIN_DATA}"]
 
-COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
