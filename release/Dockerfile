@@ -28,9 +28,9 @@ RUN mkdir "$BITCOIN_DATA" \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.dogecoin
 VOLUME /data
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY ./release/docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # RPC PORT 
-EXPOSE 22555 22556 32555 32556
+EXPOSE 22555 22556 44555 44556
 CMD ["dogecoind"]
