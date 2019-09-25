@@ -8,8 +8,8 @@ RUN set -ex \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_VERSION 1.14.0
-ENV BITCOIN_URL https://github.com/dogecoin/dogecoin/releases/download/v1.14.0/dogecoin-1.14.0-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 ed7baccafab98b5ce452bd3fd2cf7ab5e757269105350283e2bab91e4ccb7366
+ENV BITCOIN_URL https://github.com/PIVX-Project/PIVX/releases/download/v3.4.0/pivx-3.4.0-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_SHA256 fd8f61d680ae15e4776ef562bdde5166d4d1bf3fae6b0510564571ecbfd32198
 
 # install bitcoin binaries
 RUN set -ex \
@@ -24,13 +24,13 @@ RUN set -ex \
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.dogecoin \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.dogecoin
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.pivx \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.pivx
 VOLUME /opt/blockchain/data
 
 COPY ./release/docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-# RPC PORT 
-EXPOSE 22555 22556 44555 44556
-CMD ["dogecoind"]
+# Port, RPC, Test Port, Test RPC
+EXPOSE 51472 51473 18332 19332
+CMD ["pivxd"]
