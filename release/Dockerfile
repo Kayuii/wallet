@@ -24,13 +24,13 @@ RUN set -ex \
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.dash \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.dash
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.dashcore \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.dashcore
 VOLUME /opt/blockchain/data
 
 COPY ./release/docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 51472 51473 18332 19332
+EXPOSE 9998 9999 19998 19999
 CMD ["dashd"]
