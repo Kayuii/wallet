@@ -22,7 +22,7 @@ RUN set -ex \
 
 # create data directory
 ENV BITCOIN_DATA /opt/blockchain/data
-RUN mkdir "$BITCOIN_DATA" \
+RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
 	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.pivx \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.pivx
