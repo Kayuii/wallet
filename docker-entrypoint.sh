@@ -10,8 +10,6 @@ fi
 if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "bitcoinhotd" ]; then
   mkdir -p "$BITCOIN_DATA"
 
-chown bitcoin:bitcoin "$BITCOIN_DATA/.profile"
-fi
 
   if [ ! -s "$BITCOIN_DATA/bitcoinhot.conf" ]; then
     cat <<EOF > "$BITCOIN_DATA/bitcoinhot.conf"
