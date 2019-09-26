@@ -4,12 +4,12 @@ RUN apt-get update \
   && apt-get install -y unzip \
   && rm -rf /var/lib/apt/lists/*
 
-RUN cli_latest_tag=`curl -s https://api.github.com/repos/neo-project/neo-cli/releases/latest | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/'` \
-    && curl -vLO https://github.com/neo-project/neo-cli/releases/download/$cli_latest_tag/neo-cli-linux-x64.zip \
-    && plugin_latest_tag=`curl -s https://api.github.com/repos/neo-project/neo-plugins/releases/latest | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/'` \
-    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/$plugin_latest_tag/ApplicationLogs.zip \
-    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/$plugin_latest_tag/ImportBlocks.zip \
-    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/$plugin_latest_tag/RpcWallet.zip
+ENV NEO_VER=2.10.3
+
+RUN curl -vLO https://github.com/neo-project/neo-cli/releases/download/v${NEO_VER}/neo-cli-linux-x64.zip \
+    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/ApplicationLogs.zip \
+    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/ImportBlocks.zip \
+    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/RpcWallet.zip
 
 RUN unzip neo-cli-linux-x64.zip && rm neo-cli-linux-x64.zip \
   && unzip ApplicationLogs.zip -d neo-cli && rm ApplicationLogs.zip \
