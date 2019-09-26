@@ -1,7 +1,7 @@
 FROM debian:9-slim as builder
 
 RUN apt-get update \
-  && apt-get install -y unzip \
+  && apt-get install -y curl unzip \
   && rm -rf /var/lib/apt/lists/*
 
 ENV NEO_VER=3.0.0-preview1
