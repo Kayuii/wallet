@@ -24,7 +24,7 @@ RUN set -ex \
 	&& rm -rf /var/lib/apt/lists/*
 
 
-ENV BITCOIN_DATA=/opt/blockchain
+ENV BITCOIN_DATA=/opt/blockchain/data
 ENV BITCOIN_PREFIX=/opt/bitcoinhot
 # ENV PATH=${BITCOIN_PREFIX}:$PATH
 
@@ -46,4 +46,4 @@ COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 7721 7722 17721 17722 17444
-CMD ["/opt/bitcoinhot/bitcoinhotd"]
+CMD ["bitcoinhotd"]
