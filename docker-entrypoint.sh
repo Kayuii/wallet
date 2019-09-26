@@ -7,9 +7,15 @@ if [ $(echo "$1" | cut -c1) = "-" ]; then
   set -- bitcoinhotd "$@"
 fi
 
-if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "/opt/bitcoinhot/bitcoinhotd" ]; then
+if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "bitcoinhotd" ]; then
   mkdir -p "$BITCOIN_DATA"
 
+if [ ! -s "$BITCOIN_DATA/.profile" ]; then
+cat <<EOF > "$BITCOIN_DATA/.profile"
+export PATH=$BITCOIN_PREFIX:$PATH
+EOF
+chown bitcoin:bitcoin "$BITCOIN_DATA/.profile"
+fi
 
   if [ ! -s "$BITCOIN_DATA/bitcoinhot.conf" ]; then
     cat <<EOF > "$BITCOIN_DATA/bitcoinhot.conf"
@@ -106,7 +112,7 @@ EOF
   set -- "$@" -datadir="$BITCOIN_DATA"
 fi
 
-if [ "$1" = "/opt/bitcoinhot/bitcoinhotd" ] || [ "$1" = "/opt/bitcoinhot/bitcoinhotd-cli" ] || [ "$1" = "/opt/bitcoinhot/bitcoinhotd-tx" ]; then
+if [ "$1" = "bitcoinhotd" ] || [ "$1" = "bitcoinhotd-cli" ] || [ "$1" = "bitcoinhotd-tx" ]; then
   echo "run : $@ "
   exec gosu bitcoin "$@"
 fi
