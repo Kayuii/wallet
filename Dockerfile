@@ -5,7 +5,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates git p7zip p7zip-full \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION v0.2.1
+ENV BITCOIN_VERSION v0.15.1.7
 ENV BITCOIN_URL https://github.com/BitcoinHot/bitcoinhot.git
 
 RUN mkdir -p /opt/bitcoin \
