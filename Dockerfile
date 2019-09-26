@@ -40,7 +40,8 @@ RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_PREFIX" \
 	&& chmod -R a+x "$BITCOIN_PREFIX" 
 
-VOLUME ${BITCOIN_PREFIX}
+WORKDIR ${BITCOIN_DATA}
+VOLUME ${BITCOIN_DATA}
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
