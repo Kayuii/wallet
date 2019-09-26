@@ -26,7 +26,7 @@ RUN set -ex \
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 ENV BITCOIN_PREFIX=/opt/bitcoinhot
-# ENV PATH=${BITCOIN_PREFIX}:$PATH
+ENV PATH=${BITCOIN_PREFIX}:$PATH
 
 COPY --from=builder /opt/bitcoin/bth ${BITCOIN_PREFIX}
 
@@ -39,7 +39,8 @@ RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoinhot \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_PREFIX" \
 	&& chmod -R a+x "$BITCOIN_PREFIX" \
-	&& echo "export PATH=$BITCOIN_PREFIX:$PATH" >> /home/bitcoin/.profile
+	&& echo "export PATH=$BITCOIN_PREFIX:$PATH" >> /home/bitcoin/.profile \
+	&& echo "export PATH=$BITCOIN_PREFIX:$PATH" >> /etc/profile
 
 WORKDIR ${BITCOIN_DATA}
 VOLUME ${BITCOIN_DATA}
