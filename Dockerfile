@@ -5,7 +5,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates git p7zip p7zip-full \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION v0.15.1.7
+ENV BITCOIN_VERSION v0.2.1
 ENV BITCOIN_URL https://github.com/BitcoinHot/bitcoinhot.git
 
 RUN mkdir -p /opt/bitcoin \
@@ -39,7 +39,6 @@ RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoinhot \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_PREFIX" \
 	&& chmod -R a+x "$BITCOIN_PREFIX" \
-	&& echo "export PATH=$BITCOIN_PREFIX:$PATH" >> /home/bitcoin/.profile \
 	&& echo "export PATH=$BITCOIN_PREFIX:$PATH" >> /etc/profile
 
 WORKDIR ${BITCOIN_DATA}
