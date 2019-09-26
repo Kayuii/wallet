@@ -38,7 +38,8 @@ RUN mkdir -p "$BITCOIN_DATA" \
 	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoinhot \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoinhot \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_PREFIX" \
-	&& chmod -R a+x "$BITCOIN_PREFIX" 
+	&& chmod -R a+x "$BITCOIN_PREFIX" \
+	&& echo "export PATH=$BITCOIN_PREFIX:$PATH" >> /home/bitcoin/.profile
 
 WORKDIR ${BITCOIN_DATA}
 VOLUME ${BITCOIN_DATA}
