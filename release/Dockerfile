@@ -7,9 +7,9 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 3.4.0
-ENV BITCOIN_URL https://github.com/PIVX-Project/PIVX/releases/download/v${BITCOIN_VERSION}/pivx-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 fd8f61d680ae15e4776ef562bdde5166d4d1bf3fae6b0510564571ecbfd32198
+ENV BITCOIN_VERSION 1.0.1.0
+ENV BITCOIN_URL https://github.com/StreamitCoin/StreamitCoin/releases/download/v${BITCOIN_VERSION}/streamitcoin-1.0.1-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_SHA256 f3a52be3e916704457db09fe0b35fc6ada7709c628912cdae2a76289cf980bad
 
 # install bitcoin binaries
 RUN set -ex \
@@ -24,13 +24,13 @@ RUN set -ex \
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.pivx \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.pivx
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.streamitcoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.streamitcoin
 VOLUME /opt/blockchain/data
 
 COPY ./release/docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 51472 51473 18332 19332
-CMD ["pivxd"]
+EXPOSE 63636 63637
+CMD ["streamitcoind"]
