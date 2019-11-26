@@ -11,13 +11,17 @@ ENV BITCOIN_DATA=/opt/blockchain/data
 ENV BITCOIN_PREFIX=/opt/bitbaycoin
 ENV PATH=${BITCOIN_PREFIX}:$PATH
 
-RUN mkdir -p "$BITCOIN_DATA" \
+ADD testnet-bitbayd_linux64.tgz ${BITCOIN_PREFIX}
+
+RUN mkdir -p "$BITCOIN_DATA" "$BITCOIN_PREFIX" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
 	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitbay \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitbay \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_PREFIX" \
+	&& chown -R bitcoin:bitcoin "$BITCOIN_PREFIX"/bitbayd \
 	&& chmod -R a+x "$BITCOIN_PREFIX" \
 	&& echo "export PATH=$BITCOIN_PREFIX:$PATH" >> /etc/profile
+
 
 WORKDIR ${BITCOIN_DATA}
 VOLUME ${BITCOIN_DATA}
@@ -25,5 +29,5 @@ VOLUME ${BITCOIN_DATA}
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-# EXPOSE 7721 7722 17721 17722 17444
+EXPOSE 21914 21915
 CMD ["bitbayd"]

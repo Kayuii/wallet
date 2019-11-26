@@ -13,8 +13,8 @@ if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "bitbayd" ]; then
 # port=7721 
 # rpcport=7722 
 
-  if [ ! -s "$BITCOIN_DATA/bitbaycoin.conf" ]; then
-    cat <<EOF > "$BITCOIN_DATA/bitbaycoin.conf"
+  if [ ! -s "$BITCOIN_DATA/bitbay.conf" ]; then
+    cat <<EOF > "$BITCOIN_DATA/bitbay.conf"
 printtoconsole=1
 rpcallowip=::/0
 rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
@@ -30,12 +30,12 @@ rpcthreads=8
 rpctimeout=15 
 rpcclienttimeout=15
 EOF
-    chown bitcoin:bitcoin "$BITCOIN_DATA/bitbaycoin.conf"
+    chown bitcoin:bitcoin "$BITCOIN_DATA/bitbay.conf"
   fi
 
   chown -R bitcoin "$BITCOIN_DATA"
   ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitbay 
-	chown -h bitcoin:bitcoin /home/bitcoin/.bitbay 
+  chown -h bitcoin:bitcoin /home/bitcoin/.bitbay 
 
   echo "$0: setting data directory to $BITCOIN_DATA"
 
