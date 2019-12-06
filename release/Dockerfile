@@ -41,7 +41,7 @@ RUN mkdir -p "$BITCOIN_DATA" \
 VOLUME  "$BITCOIN_DATA"
 WORKDIR  "$BITCOIN_DATA"
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY ./release/docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 9980 9981 9982
