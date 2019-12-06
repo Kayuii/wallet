@@ -1,52 +1,48 @@
-FROM ubuntu:xenial
+FROM ubuntu:18.04
 
 ARG cores=4
 ENV ecores=$cores
-ENV GOD_VER=v0.1.5.0
+ENV VER=v0.17.0.3
 
-RUN apt update \
-  && apt install -y --no-install-recommends \
-     software-properties-common \
-     ca-certificates \
-     wget curl git python vim \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# install build tools
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends  software-properties-common\
+  build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 git libboost-all-dev\ 
+  # cleanup
+  && rm -rf /var/lib/apt/lists/*
 
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     curl build-essential libtool autotools-dev automake \
-     python3 bsdmainutils cmake libevent-dev autoconf automake \
-     pkg-config libssl-dev libboost-system-dev libboost-filesystem-dev \
-     libboost-chrono-dev libboost-program-options-dev libboost-test-dev \
-     libboost-thread-dev libdb4.8-dev libdb4.8++-dev libgmp-dev \
-     libminiupnpc-dev libzmq3-dev \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# fix https://github.com/BitcoinGod/BitcoinGod/issues/1 for ubuntu 18.04
-# RUN apt install -y --no-install-recommends libssl1.0-dev \
-#   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# install libdb
+RUN add-apt-repository ppa:bitcoin/bitcoin -y \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends libdb4.8-dev libdb4.8++-dev \
+  # cleanup
+  && rm -rf /var/lib/apt/lists/* \
+  && apt-get remove -y software-properties-common 
 
 # Build source
-RUN mkdir -p /opt/bitcoingod \
+RUN mkdir -p /opt/pigeond \
   && mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.bitcoingod \
-  && cd /opt/bitcoingod \
-  && mkdir bitcoingod \
-  && git clone --depth 1 --branch $GOD_VER https://github.com/bitcoingod/bitcoingod bitcoingod \
-  && cd /opt/bitcoingod/bitcoingod/ \
-  && cd depends \
-  && make -j$ecores NO_QT=1 \
-  && cd .. \
-  && chmod +x ./autogen.sh \
-  && ./autogen.sh \
-  && ./configure --with-gui=no --enable-hardening --prefix=`pwd`/depends/x86_64-pc-linux-gnu \
-  && make -j$ecores \
-  && cp /opt/bitcoingod/bitcoingod/src/bitcoingodd /opt/blockchain/bitcoingodd \
-  && cp /opt/bitcoingod/bitcoingod/src/bitcoingod-cli /opt/blockchain/bitcoingod-cli \
-  && rm -rf /opt/bitcoingod/
+  && ln -s /opt/blockchain/config /root/.pigeond \
+  && cd /opt/pigeond \
+  && mkdir pigeond \
+  && git clone --depth 1 --branch $VER https://github.com/Pigeoncoin/pigeoncoin.git pigeond \
+  && cd /opt/pigeond/pigeond/
 
-# Write default bitcoingod.conf (can be overridden on commandline)
+RUN cd /opt/pigeond/pigeond/ \
+  && export CC="gcc -fPIC"  \
+  && export CXX="g++ -fPIC"  \
+  && ./autogen.sh  \
+  && ./configure --enable-cxx --disable-shared --with-pic --without-gui \
+  && make  \
+  && make install \
+  && cp /opt/pigeond/pigeond/src/pigeond /opt/blockchain/pigeond \
+  && cp /opt/pigeond/pigeond/src/pigeon-cli /opt/blockchain/pigeon-cli \
+  && rm -rf /opt/pigeond/
+
+  # --enable-cxx --disable-shared --with-pic CXXFLAGS="-fPIC -O" CPPFLAGS="-fPIC -O"
+
+# Write default pigeond.conf (can be overridden on commandline)
 RUN echo "datadir=/opt/blockchain/data  \n\
                                         \n\
 dbcache=256                             \n\
@@ -60,12 +56,12 @@ logips=1                                \n\
 rpcthreads=8                            \n\
 rpcallowip=127.0.0.1                    \n\
 rpctimeout=15                           \n\
-rpcclienttimeout=15                     \n" > /opt/blockchain/config/bitcoingod.conf
+rpcclienttimeout=15                     \n" > /opt/blockchain/config/pigeond.conf
 
 WORKDIR /opt/blockchain/
 VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 8885 8886 18885 18886
+EXPOSE 8756 8757 18756 18757
 
-CMD ["/opt/blockchain/bitcoingodd", "-daemon=0"]
+CMD ["/opt/blockchain/pigeond", "-daemon=0"]
