@@ -6,7 +6,6 @@ RUN apt-get update \
 
 ENV NEO_VER=3.0.0-preview1
 
-WORKDIR /neo-cli
 
 RUN curl -vLO https://github.com/neo-project/neo-cli/releases/download/v${NEO_VER}/neo-cli-linux-x64.zip \
     && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/ApplicationLogs.zip \
@@ -18,8 +17,8 @@ RUN unzip neo-cli-linux-x64.zip && rm neo-cli-linux-x64.zip \
   && unzip ImportBlocks.zip -d neo-cli && rm ImportBlocks.zip \
   && unzip RpcWallet.zip -d neo-cli && rm RpcWallet.zip
 
-RUN sed -i'' 's/"Chain": .*/"Chain": "Chain",/' *.json \
-  && sed -i'' 's/"ApplicationLogs_{0}"/"ApplicationLogs"/g' Plugins/ApplicationLogs/*.json
+RUN sed -i'' 's/"Chain": .*/"Chain": "Chain",/' ./neo-cli/*.json \
+  && sed -i'' 's/"ApplicationLogs_{0}"/"ApplicationLogs"/g' ./neo-cli/Plugins/ApplicationLogs/*.json
 
 FROM microsoft/dotnet:runtime
 
