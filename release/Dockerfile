@@ -28,7 +28,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /neo-cli
-COPY  --from=Build /neo-cli .
+COPY  --from=builder /neo-cli .
 
 EXPOSE 10332 20332
 
