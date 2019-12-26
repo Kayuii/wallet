@@ -7,8 +7,8 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 1.14.0
-ENV BITCOIN_URL https://github.com/dogecoin/dogecoin/releases/download/v1.14.0/dogecoin-1.14.0-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_VERSION 1.14.2
+ENV BITCOIN_URL https://github.com/dogecoin/dogecoin/releases/download/v${BITCOIN_VERSION}/dogecoin-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
 ENV BITCOIN_SHA256 ed7baccafab98b5ce452bd3fd2cf7ab5e757269105350283e2bab91e4ccb7366
 
 # install bitcoin binaries
