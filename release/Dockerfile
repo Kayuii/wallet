@@ -23,7 +23,7 @@ FROM microsoft/dotnet:runtime
 
 RUN apt-get update \
   # && apt-get install -y libleveldb-dev sqlite3 libsqlite3-dev libunwind8-dev unzip \
-  && apt-get install -y libleveldb sqlite3 libsqlite3 libunwind8 \
+  && apt-get install -y libleveldb sqlite3 libsqlite3 libunwind8 screen \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /neo-cli
@@ -31,4 +31,5 @@ COPY  --from=Build /neo-cli .
 
 EXPOSE 10332 20332
 
-CMD ["/usr/bin/dotnet", "neo-cli.dll", "/rpc"]
+ENTRYPOINT ["screen","-DmS","node","dotnet","neo-cli.dll","-r"]
+# CMD ["/usr/bin/dotnet", "neo-cli.dll", "/rpc"]
