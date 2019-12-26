@@ -9,7 +9,7 @@ RUN set -ex \
 
 ENV BITCOIN_VERSION 0.14.0.5
 ENV BITCOIN_URL https://github.com/dashpay/dash/releases/download/v${BITCOIN_VERSION}/dashcore-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 28d45537e1c982967075742f9f6ff631d6de72d075091d53ff039ed8919714ba
+ENV BITCOIN_SHA256 c40f579d30f523bf0d220e4c02ed58075cf2bd4ed9a9c73e72ac2b7420728f6a
 
 # install bitcoin binaries
 RUN set -ex \
