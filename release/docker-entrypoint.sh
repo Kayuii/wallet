@@ -10,6 +10,10 @@ fi
 if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "siad" ]; then
   mkdir -p "$BITCOIN_DATA"
 
+  chown -R bitcoin "$BITCOIN_DATA"
+  ln -sfn "$BITCOIN_DATA" /home/bitcoin/.sia
+  chown -h bitcoin:bitcoin /home/bitcoin/.sia
+
   echo "$0: setting data directory to $BITCOIN_DATA"
 
   set -- "$@" --sia-directory="$BITCOIN_DATA"
