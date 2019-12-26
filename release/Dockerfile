@@ -7,7 +7,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 3.4.0
+ENV BITCOIN_VERSION 4.0.0
 ENV BITCOIN_URL https://github.com/PIVX-Project/PIVX/releases/download/v${BITCOIN_VERSION}/pivx-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
 ENV BITCOIN_SHA256 fd8f61d680ae15e4776ef562bdde5166d4d1bf3fae6b0510564571ecbfd32198
 
