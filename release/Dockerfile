@@ -9,7 +9,7 @@ RUN set -ex \
 
 ENV BITCOIN_VERSION 4.0.0
 ENV BITCOIN_URL https://github.com/PIVX-Project/PIVX/releases/download/v${BITCOIN_VERSION}/pivx-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 fd8f61d680ae15e4776ef562bdde5166d4d1bf3fae6b0510564571ecbfd32198
+ENV BITCOIN_SHA256 6cb1f608ec0e106ea6bbb455ec8b85c7cad05ca52ab43011d3db80557816b79e
 
 # install bitcoin binaries
 RUN set -ex \
