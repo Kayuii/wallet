@@ -9,7 +9,7 @@ RUN set -ex \
 
 ENV BITCOIN_VERSION 1.14.2
 ENV BITCOIN_URL https://github.com/dogecoin/dogecoin/releases/download/v${BITCOIN_VERSION}/dogecoin-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 ed7baccafab98b5ce452bd3fd2cf7ab5e757269105350283e2bab91e4ccb7366
+ENV BITCOIN_SHA256 10c400c8f2039b1f804b8a533266201a9e4e3b32a8854501e8a43792e1ee78e6
 
 # install bitcoin binaries
 RUN set -ex \
