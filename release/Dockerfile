@@ -6,6 +6,8 @@ RUN apt-get update \
 
 ENV NEO_VER=3.0.0-preview1
 
+WORKDIR /neo-cli
+
 RUN curl -vLO https://github.com/neo-project/neo-cli/releases/download/v${NEO_VER}/neo-cli-linux-x64.zip \
     && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/ApplicationLogs.zip \
     && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/ImportBlocks.zip \
