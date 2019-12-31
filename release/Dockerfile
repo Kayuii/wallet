@@ -4,7 +4,7 @@ RUN apt-get update \
   && apt-get install -y curl unzip \
   && rm -rf /var/lib/apt/lists/*
 
-ENV NEO_VER=3.0.0-preview1
+ENV NEO_VER=2.10.3
 
 
 RUN curl -vLO https://github.com/neo-project/neo-cli/releases/download/v${NEO_VER}/neo-cli-linux-x64.zip \
