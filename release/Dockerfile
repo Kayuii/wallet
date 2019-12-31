@@ -24,7 +24,7 @@ FROM mcr.microsoft.com/dotnet/core/runtime:3.0 AS Final
 
 RUN apt-get update \
   # && apt-get install -y libleveldb-dev sqlite3 libsqlite3-dev libunwind8-dev unzip \
-  && apt-get install -y libleveldb-dev sqlite3 screen \
+  && apt-get install -y libleveldb-dev sqlite3 screen unzip \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /neo-cli
