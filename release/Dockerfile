@@ -6,16 +6,17 @@ RUN apt-get update \
 
 ENV NEO_VER=3.0.0-preview1
 
-
 RUN curl -vLO https://github.com/neo-project/neo-cli/releases/download/v${NEO_VER}/neo-cli-linux-x64.zip \
     && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/ApplicationLogs.zip \
     && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/ImportBlocks.zip \
-    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/RpcWallet.zip
+    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/RpcWallet.zip \
+    && curl -vLO https://github.com/neo-project/neo-plugins/releases/download/v${NEO_VER}/RpcNep5Tracker.zip
 
 RUN unzip neo-cli-linux-x64.zip && rm neo-cli-linux-x64.zip \
   && unzip ApplicationLogs.zip -d neo-cli && rm ApplicationLogs.zip \
   && unzip ImportBlocks.zip -d neo-cli && rm ImportBlocks.zip \
-  && unzip RpcWallet.zip -d neo-cli && rm RpcWallet.zip
+  && unzip RpcWallet.zip -d neo-cli && rm RpcWallet.zip \
+  && unzip RpcNep5Tracker.zip -d neo-cli && rm RpcNep5Tracker.zip
 
 RUN sed -i'' 's/"Chain": .*/"Chain": "Chain",/' ./neo-cli/*.json \
   && sed -i'' 's/"ApplicationLogs_{0}"/"ApplicationLogs"/g' ./neo-cli/Plugins/ApplicationLogs/*.json
@@ -23,8 +24,8 @@ RUN sed -i'' 's/"Chain": .*/"Chain": "Chain",/' ./neo-cli/*.json \
 FROM mcr.microsoft.com/dotnet/core/runtime:3.0 AS Final
 
 RUN apt-get update \
-  # && apt-get install -y libleveldb-dev sqlite3 libsqlite3-dev libunwind8-dev unzip \
-  && apt-get install -y libleveldb-dev sqlite3 screen unzip \
+  && apt-get install -y libleveldb-dev sqlite3 libsqlite3-dev libunwind8-dev unzip \
+  # && apt-get install -y libleveldb-dev sqlite3 screen unzip \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /neo-cli
