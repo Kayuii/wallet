@@ -28,7 +28,7 @@ COPY ./enable_history.js /opt/blockchain/
 RUN sed -ie 's/fibos.start()/require(".\/enable_history")(fibos)/g' /opt/blockchain/node.js
 
 # Write default dccy_node.conf (can be overridden on commandline)
-RUN echo '{ "config_dir": "/opt/blockchain/config", "data_dir": "/opt/blockchain/data", "core_symbol": "DCCY", "pubkey_prefix": "DCCY", "http_server_address": "0.0.0.0:8870", "p2p_listen_endpoint": "0.0.0.0:9870"}' > /opt/dccy_node/install/dccy/config.json
+RUN echo '{ "config_dir": "/opt/blockchain/config", "data_dir": "/opt/blockchain/data", "core_symbol": "DCCY", "pubkey_prefix": "DCCY", "http_server_address": "0.0.0.0:8870", "p2p_listen_endpoint": "0.0.0.0:9870"}' > /opt/blockchain/config.json
 
 WORKDIR /opt/blockchain/
 VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
