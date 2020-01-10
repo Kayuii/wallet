@@ -1,8 +1,11 @@
 module.exports = function(fibos) {
     let accountName = process.env.WATCH_ACCOUNT;
     if (accountName) {
+      var arr = accountName.slice(1,-1).split(',')
+      // console.log(arr)
+
       fibos.load('history', {
-        'filter-on': [accountName + ':transfer:', accountName + ':extransfer:'],
+        'filter-on': arr,
       });
   
       fibos.load('history_api');
@@ -10,4 +13,3 @@ module.exports = function(fibos) {
   
     fibos.start();
   };
-  

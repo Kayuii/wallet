@@ -25,6 +25,7 @@ RUN mkdir -p /opt/blockchain/config \
   && cp -r /opt/dccy_node/install/dccy/* /opt/blockchain/
 
 COPY ./enable_history.js /opt/blockchain/
+RUN sed -ie '3i/chain_config['hard-replay-blockchain'] = true;' /opt/blockchain/node.js
 RUN sed -ie 's/fibos.start()/require(".\/enable_history")(fibos)/g' /opt/blockchain/node.js
 
 # Write default dccy_node.conf (can be overridden on commandline)
