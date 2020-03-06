@@ -5,9 +5,9 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 3.14.0
-ENV BITCOIN_URL https://github.com/blocknetdx/blocknet/releases/download/v3.14.0/blocknetdx-3.14.0-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 24a185429a2432ee9f62331c17bc76e29a3cb9818c5ae3e207a05de92af8dd25
+ENV BITCOIN_VERSION 4.0.2
+ENV BITCOIN_URL https://github.com/blocknetdx/blocknet/releases/download/v${BITCOIN_VERSION}/blocknet-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_SHA256 f7e1c1d0b03e68b9a7620543555cce873c3fb98e6826e4c0283d092ee93ba1ce
 
 RUN set -ex \
 	&& cd /tmp \
@@ -27,12 +27,12 @@ RUN set -ex \
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /usr/local/bin/blocknetdx* /usr/local/bin/
+COPY --from=builder /usr/local/bin/blocknetd* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetdx \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetdx
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetd \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetd
 
 COPY ./releases/docker-entrypoint.sh /entrypoint.sh
 
@@ -44,4 +44,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 # Port, RPC, Test Port, Test RPC
 EXPOSE 41412 41414 41474 41419
 
-CMD ["blocknetdxd", "-daemon=0", "-server=0"]
+CMD ["blocknetd", "-daemon=0", "-server=0"]
