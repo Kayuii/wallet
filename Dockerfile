@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:bionic as builder
 
 ARG cores=4
 ENV ecores=$cores
@@ -50,29 +50,33 @@ RUN mkdir -p /opt/blockchain/config \
   && make -j$ecores \
   && make install
 
-# Write default bitcoin.conf (can be overridden on commandline)
-RUN echo "datadir=/opt/blockchain/data    \n\
-                                          \n\
-dbcache=256                               \n\
-maxmempool=512                            \n\
-maxmempoolxbridge=128                     \n\
-                                          \n\
-port=8333    # testnet: 18333            \n\
-rpcport=8332 # testnet: 19332            \n\
-                                          \n\
-listen=1                                  \n\
-server=1                                  \n\
-logtimestamps=1                           \n\
-logips=1                                  \n\
-                                          \n\
-rpcallowip=127.0.0.1                      \n\
-rpctimeout=15                             \n\
-rpcclienttimeout=15" > /opt/blockchain/config/bitcoin.conf
 
-WORKDIR /opt/blockchain/
-VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
+FROM debian:stretch-slim 
+
+RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
+
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends gosu \
+	&& rm -rf /var/lib/apt/lists/*
+
+ENV BITCOIN_DATA=/opt/blockchain/data
+
+COPY --from=builder /opt/blockchain/bitcoin* /usr/local/bin/
+
+RUN mkdir -p ${BITCOIN_DATA} \
+	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
+
+COPY ./docker-entrypoint.sh /entrypoint.sh
+
+WORKDIR ${BITCOIN_DATA}
+VOLUME ["${BITCOIN_DATA}"]
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
 EXPOSE 8333 8332  18333  18332
 
-CMD ["/opt/blockchain/bitcoind", "-daemon=0", "-server=0"]
+CMD ["bitcoind", "-daemon=0", "-server=0"]
