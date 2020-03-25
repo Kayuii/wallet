@@ -1,6 +1,6 @@
 FROM ubuntu:bionic as builder
 
-ARG cores=4
+ARG cores=1
 ENV ecores=$cores
 ENV BCHSV_VER=v1.0.2
 
@@ -51,7 +51,7 @@ RUN mkdir -p /opt/blockchain/config \
   && make install
 
 
-FROM debian:stretch-slim 
+FROM debian:buster-slim
 
 RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
@@ -69,7 +69,7 @@ RUN mkdir -p ${BITCOIN_DATA} \
 	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
 
-COPY ./docker-entrypoint.sh /entrypoint.sh
+COPY ./releases/docker-entrypoint.sh /entrypoint.sh
 
 WORKDIR ${BITCOIN_DATA}
 VOLUME ["${BITCOIN_DATA}"]
@@ -80,3 +80,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 8333 8332  18333  18332
 
 CMD ["bitcoind", "-daemon=0", "-server=0"]
+
