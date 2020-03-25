@@ -25,6 +25,14 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends gosu \
 	&& rm -rf /var/lib/apt/lists/*
 
+RUN add-apt-repository ppa:bitcoin/bitcoin \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
+     libtool libevent-dev libssl-dev \
+     libdb4.8-dev libdb4.8++-dev \
+     libcap-dev \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 ENV BITCOIN_DATA=/opt/blockchain/data
 
 COPY --from=builder /usr/local/bin/bitcoin* /usr/local/bin/
