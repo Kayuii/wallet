@@ -1,78 +1,47 @@
-FROM ubuntu:bionic
+FROM debian:stretch-slim as builder
 
-ARG cores=4
-ENV ecores=$cores
-ENV BCHSV_VER=v1.0.2
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
+	&& rm -rf /var/lib/apt/lists/*
 
-RUN apt update \
-  && apt install -y --no-install-recommends \
-     software-properties-common \
-     ca-certificates \
-     wget curl git python vim \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ENV BITCOIN_VERSION 1.0.2
+ENV BITCOIN_URL https://download.bitcoinsv.io/bitcoinsv/${BITCOIN_VERSION}/bitcoin-sv-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_SHA256 4f777d47c136194f0076a54b2241d41fc719d2e8739de559c7bf568e22a0b254
 
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     build-essential libtool autotools-dev bsdmainutils \
-     libevent-dev autoconf automake pkg-config libssl-dev \
-     libdb4.8-dev libdb4.8++-dev python-setuptools cmake \
-     libcap-dev \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN set -ex \
+	&& cd /tmp \
+	&& wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
+	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
+	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt \
+	&& rm -rf /tmp/*
 
-# gcc 8
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     g++-8-multilib gcc-8-multilib binutils-gold \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+FROM debian:stretch-slim 
 
-ENV PROJECTDIR=/opt/bitcoin/bitcoin-sv
-ENV BASEPREFIX=$PROJECTDIR/depends
-ENV HOST=x86_64-pc-linux-gnu
+RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
-# Copy source files
-RUN mkdir -p /opt/bitcoin \
-  && cd /opt/bitcoin \
-  && git clone --depth 1 --branch $BCHSV_VER https://github.com/bitcoin-sv/bitcoin-sv.git
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends gosu \
+	&& rm -rf /var/lib/apt/lists/*
 
-# Build source
-RUN mkdir -p /opt/blockchain/config \
-  && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.bitcoin \
-  && cd $BASEPREFIX \
-  && make -j$ecores && make install \
-  && cd $PROJECTDIR \
-  && chmod +x ./autogen.sh; sync \
-  && ./autogen.sh \
-  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
-  && echo "Building with cores: $ecores" \
-  && make -j$ecores \
-  && make install
+ENV BITCOIN_DATA=/opt/blockchain/data
 
-# Write default bitcoin.conf (can be overridden on commandline)
-RUN echo "datadir=/opt/blockchain/data    \n\
-                                          \n\
-dbcache=256                               \n\
-maxmempool=512                            \n\
-maxmempoolxbridge=128                     \n\
-                                          \n\
-port=8333    # testnet: 18333            \n\
-rpcport=8332 # testnet: 19332            \n\
-                                          \n\
-listen=1                                  \n\
-server=1                                  \n\
-logtimestamps=1                           \n\
-logips=1                                  \n\
-                                          \n\
-rpcallowip=127.0.0.1                      \n\
-rpctimeout=15                             \n\
-rpcclienttimeout=15" > /opt/blockchain/config/bitcoin.conf
+COPY --from=builder /usr/local/bin/bitcoin* /usr/local/bin/
 
-WORKDIR /opt/blockchain/
-VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
+RUN mkdir -p ${BITCOIN_DATA} \
+	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
+
+COPY ./releases/docker-entrypoint.sh /entrypoint.sh
+
+WORKDIR ${BITCOIN_DATA}
+VOLUME ["${BITCOIN_DATA}"]
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 8333 8332  18333  18332
+EXPOSE 41412 41414 41474 41419
 
-CMD ["/opt/blockchain/bitcoind", "-daemon=0", "-server=0"]
+CMD ["bitcoind", "-daemon=0", "-server=0"]
