@@ -22,16 +22,16 @@ RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends gosu \
+	&& apt-get install -qq --no-install-recommends gosu libc6-dev\
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends \
-     libtool libevent-dev libssl-dev \
-     libdb4.8-dev libdb4.8++-dev \
-     libcap-dev \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# RUN add-apt-repository ppa:bitcoin/bitcoin \
+#   && apt-get update \
+#   && apt-get install -y --no-install-recommends \
+#      libtool libevent-dev libssl-dev \
+#      libdb4.8-dev libdb4.8++-dev \
+#      libcap-dev \
+#   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
