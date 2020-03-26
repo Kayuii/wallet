@@ -3,7 +3,7 @@ FROM debian:buster-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget unzip \
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget unzip socat \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_VERSION 1.4.6
@@ -25,7 +25,7 @@ RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu curl \
+	&& apt-get install -qq --no-install-recommends gosu curl socat \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_DATA /opt/blockchain/data
