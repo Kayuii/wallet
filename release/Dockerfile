@@ -21,13 +21,13 @@ RUN set -ex \
 
 # create data directory
 ENV BITCOIN_DATA /opt/blockchain/data
-RUN mkdir "$BITCOIN_DATA" \
+RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
 	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
 VOLUME /opt/blockchain/data
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY ./release/docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 8332 8333 18332 18333
