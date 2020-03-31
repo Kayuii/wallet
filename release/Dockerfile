@@ -8,14 +8,13 @@ RUN set -ex \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_VERSION 0.21.2
-ENV BITCOIN_URL https://download.bitcoinabc.org/v${BITCOIN_VERSION}/linux/bitcoin-abc-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_URL https://github.com/Bitcoin-ABC/bitcoin-abc/releases/download/v${BITCOIN_VERSION}/bitcoin-abc-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
 ENV BITCOIN_SHA256 596a2f8a1d23919a9daf00686df195a50857a8aaddc40726b2ff4b364cdb6afe
 
 # install bitcoin binaries
 RUN set -ex \
 	&& cd /tmp \
 	&& wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
-	&& sha256sum bitcoin.tar.gz \
 	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
 	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt \
 	&& rm -rf /tmp/*
