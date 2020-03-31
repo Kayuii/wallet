@@ -17,6 +17,7 @@ RUN set -ex \
 	&& wget -qO bitcoin.zip "$BITCOIN_URL" \
 	&& unzip -d /tmp/bitcoin/ /tmp/bitcoin.zip \
     && mv /tmp/bitcoin/Sia-v${BITCOIN_VERSION}-linux-amd64/siac /bitcoin/ \
+    && mv /tmp/bitcoin/Sia-v${BITCOIN_VERSION}-linux-amd64/siad /bitcoin/ \
 	&& rm -rf /tmp/*
 
 FROM debian:buster-slim
