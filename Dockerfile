@@ -4,7 +4,7 @@ LABEL maintainer="Maksym Pugach <pugach.m@gmail.com>, Daniel Zhou <danichau93@gm
 
 ENV BITCOIN_ROOT=/opt/blockchain
 ENV BDB_PREFIX="${BITCOIN_ROOT}/db4" BITCOIN_REPO="${BITCOIN_ROOT}/repo" PATH="${BITCOIN_ROOT}/bin:$PATH" BITCOIN_DATA="${BITCOIN_ROOT}/data"
-ENV BITCOIN_VER=v0.8.1
+ENV BITCOIN_VER=v0.9.0
 
 RUN mkdir -p $BITCOIN_ROOT \
     && mkdir -p $BDB_PREFIX \
