@@ -5,9 +5,9 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 4.1.0
+ENV BITCOIN_VERSION 4.2.0
 ENV BITCOIN_URL https://github.com/blocknetdx/blocknet/releases/download/v${BITCOIN_VERSION}/blocknet-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 a69742a15529d5f20c881c40b5dae4641373405d80c551eb5ff576a5436fc47d
+ENV BITCOIN_SHA256 3189bd12480ff14af31d3392ec2f0213082326746846f4a6ab6c676eca16c39e
 
 RUN set -ex \
 	&& cd /tmp \
