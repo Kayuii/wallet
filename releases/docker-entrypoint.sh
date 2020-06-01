@@ -2,15 +2,15 @@
 set -e
 
 if [ $(echo "$1" | cut -c1) = "-" ]; then
-  echo "$0: assuming arguments for blocknetd"
-  set -- blocknetd "$@"
+  echo "$0: assuming arguments for litecoind"
+  set -- litecoind "$@"
 fi
 
-if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "blocknetd" ]; then
+if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "litecoind" ]; then
   mkdir -p "$BITCOIN_DATA"
   
-  if [ ! -s "$BITCOIN_DATA/blocknet.conf" ]; then
-    cat <<EOF > "$BITCOIN_DATA/blocknet.conf"
+  if [ ! -s "$BITCOIN_DATA/litecoin.conf" ]; then
+    cat <<EOF > "$BITCOIN_DATA/litecoin.conf"
 printtoconsole=1
 rpcallowip=::/0
 rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
@@ -19,8 +19,8 @@ datadir=$BITCOIN_DATA
 dbcache=256
 maxmempool=512
 maxmempoolxbridge=128     
-port=41412 
-rpcport=41414 
+port=9333 
+rpcport=9332 
 listen=1 
 server=1 
 logtimestamps=1 
@@ -29,18 +29,18 @@ rpcthreads=8
 rpctimeout=15 
 rpcclienttimeout=15 
 EOF
-    chown bitcoin:bitcoin "$BITCOIN_DATA/blocknet.conf"
+    chown bitcoin:bitcoin "$BITCOIN_DATA/litecoin.conf"
   fi
 
   chown -R bitcoin:bitcoin "$BITCOIN_DATA"
-  ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknet 
-	chown -h bitcoin:bitcoin /home/bitcoin/.blocknet 
+  ln -sfn "$BITCOIN_DATA" /home/bitcoin/.litecoin 
+	chown -h bitcoin:bitcoin /home/bitcoin/.litecoin 
 
   echo "$0: setting data directory to $BITCOIN_DATA"
   set -- "$@" -datadir="$BITCOIN_DATA"
 fi
 
-if [ "$1" = "blocknetd" ] || [ "$1" = "blocknet-cli" ] || [ "$1" = "blocknet-tx" ]; then
+if [ "$1" = "litecoind" ] || [ "$1" = "litecoin-cli" ] || [ "$1" = "litecoin-tx" ]; then
   echo "run : $@ "
   exec gosu bitcoin "$@"
 fi

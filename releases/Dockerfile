@@ -5,9 +5,10 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 4.2.0
-ENV BITCOIN_URL https://github.com/blocknetdx/blocknet/releases/download/v${BITCOIN_VERSION}/blocknet-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 3189bd12480ff14af31d3392ec2f0213082326746846f4a6ab6c676eca16c39e
+ENV BITCOIN_VERSION 0.17.1
+
+ENV BITCOIN_URL https://download.litecoin.org/litecoin-${BITCOIN_VERSION}/linux/litecoin-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_SHA256 9cab11ba75ea4fb64474d4fea5c5b6851f9a25fe9b1d4f7fc9c12b9f190fed07
 
 RUN set -ex \
 	&& cd /tmp \
@@ -27,12 +28,12 @@ RUN set -ex \
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /usr/local/bin/blocknet* /usr/local/bin/
+COPY --from=builder /usr/local/bin/litecoin* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetd \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetd
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.litecoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.litecoin
 
 COPY ./releases/docker-entrypoint.sh /entrypoint.sh
 
@@ -42,6 +43,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 41412 41414 41474 41419
+EXPOSE 9333 9332 19333 19332
 
-CMD ["blocknetd", "-daemon=0", "-server=0"]
+CMD ["litecoind", "-daemon=0", "-server=0"]

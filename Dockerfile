@@ -4,7 +4,7 @@ FROM ubuntu:bionic as builder
 
 ARG cores=4
 ENV ecores=$cores
-ENV BLOCK_VER=v4.2.0
+ENV VER=v0.17.1
 
 RUN apt update \
   && apt install -y --no-install-recommends \
@@ -29,19 +29,19 @@ RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
      g++-8-multilib gcc-8-multilib binutils-gold \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV PROJECTDIR=/opt/blocknet/blocknet
+ENV PROJECTDIR=/opt/blocknet/litecoin
 ENV BASEPREFIX=$PROJECTDIR/depends
 ENV HOST=x86_64-pc-linux-gnu
 
 # Copy source files
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $BLOCK_VER https://github.com/blocknetdx/blocknet.git
+  && git clone --depth 1 --branch $VER https://github.com/litecoin-project/litecoin.git
 
 # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.blocknet \
+  && ln -s /opt/blockchain/config /root/.litecoin \
   && cd $BASEPREFIX \
   && make -j$ecores && make install \
   && cd $PROJECTDIR \
@@ -52,40 +52,33 @@ RUN mkdir -p /opt/blockchain/config \
   && make -j$ecores \
   && make install
 
-FROM ubuntu:bionic 
+FROM debian:stretch-slim 
 
-RUN mkdir -p /opt/blockchain/config \
-  && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.blocknet \
+RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
-COPY --from=builder /bin/blocknet* /bin
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends gosu \
+	&& rm -rf /var/lib/apt/lists/*
 
-# Write default blocknet.conf (can be overridden on commandline)
-RUN echo "datadir=/opt/blockchain/data    \n\
-                                          \n\
-dbcache=256                               \n\
-maxmempool=512                            \n\
-maxmempoolxbridge=128                     \n\
-                                          \n\
-port=41412    # testnet: 41474            \n\
-rpcport=41414 # testnet: 41419            \n\
-                                          \n\
-listen=1                                  \n\
-server=1                                  \n\
-logtimestamps=1                           \n\
-logips=1                                  \n\
-                                          \n\
-rpcallowip=127.0.0.1                      \n\
-rpctimeout=15                             \n\
-rpcclienttimeout=15" > /opt/blockchain/config/blocknet.conf
+ENV BITCOIN_DATA=/opt/blockchain/data
 
-WORKDIR /opt/blockchain/
-VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
+COPY --from=builder /bin/litecoin* /usr/local/bin/
+
+RUN mkdir -p ${BITCOIN_DATA} \
+	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetd \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetd
 
 COPY docker-entrypoint.sh /entrypoint.sh
+
+WORKDIR ${BITCOIN_DATA}
+VOLUME ["${BITCOIN_DATA}"]
+
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 41412 41414 41474 41419
+EXPOSE 9333 9332 19333 19332
 
-CMD ["blocknetd", "-daemon=0", "-server=0"]
+CMD ["litecoind", "-daemon=0", "-server=0"]
+
