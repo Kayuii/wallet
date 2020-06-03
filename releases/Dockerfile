@@ -28,7 +28,7 @@ RUN set -ex \
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /usr/local/bin/dappcoin* /usr/local/bin/
+COPY --from=builder /usr/local/dappcoin* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
