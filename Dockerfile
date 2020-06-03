@@ -2,7 +2,7 @@
 # docker build --build-arg cores=8 -t blocknet/servicenode:blocknet .
 FROM ubuntu:bionic as builder
 
-ARG cores=4
+ARG cores=1
 ENV ecores=$cores
 ENV VER=V1.0.0.1
 
@@ -16,42 +16,38 @@ RUN apt update \
 RUN add-apt-repository ppa:bitcoin/bitcoin \
   && apt update \
   && apt install -y --no-install-recommends \
-     build-essential libtool autotools-dev bsdmainutils \
-     libevent-dev autoconf automake pkg-config libssl-dev \
-     libdb4.8-dev libdb4.8++-dev python-setuptools cmake \
-     libcap-dev \
+     curl build-essential libtool autotools-dev automake \
+     python3 bsdmainutils cmake libevent-dev autoconf automake \
+     pkg-config libssl-dev libboost-system-dev libboost-filesystem-dev \
+     libboost-chrono-dev libboost-program-options-dev libboost-test-dev \
+     libboost-thread-dev libdb4.8-dev libdb4.8++-dev libgmp-dev \
+     libminiupnpc-dev libzmq3-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# gcc 8
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     g++-8-multilib gcc-8-multilib binutils-gold \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-ENV PROJECTDIR=/opt/blocknet/dappercoin
+ENV PROJECTDIR=/opt/blocknet/dappcoin
 ENV BASEPREFIX=$PROJECTDIR
 ENV HOST=x86_64-pc-linux-gnu
 
 # Copy source files
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/dapperlink/DappCoin.git dappercoin
+  && git clone --depth 1 --branch $VER https://github.com/dapperlink/DappCoin.git dappcoin
 
 # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.dappercoin \
-  && cd $BASEPREFIX && ls -al \
-  && make -j$ecores NO_QT=1 \
+  && ln -s /opt/blockchain/config /root/.dappcoin \
   && cd $PROJECTDIR \
+  && chmod +x ./autogen.sh \
   && chmod +x ./autogen.sh; sync \
-   && ls -al \
   && ./autogen.sh \
-  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
+  && ./configure \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
   && make install
+
+
+  #&& ./configure --with-gui=no --enable-hardening --prefix=`pwd`/depends/x86_64-pc-linux-gnu \
 
 FROM debian:stretch-slim 
 
@@ -64,12 +60,12 @@ RUN set -ex \
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /bin/dappercoin* /usr/local/bin/
+COPY --from=builder /bin/dappcoin* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.dappercoin \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.dappercoin
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.dappcoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.dappcoin
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
@@ -81,5 +77,5 @@ ENTRYPOINT ["/entrypoint.sh"]
 # Port, RPC, Test Port, Test RPC
 EXPOSE 9333 9332 19333 19332
 
-CMD ["dappercoind", "-daemon=0", "-server=0"]
+CMD ["dappcoind", "-daemon=0", "-server=0"]
 

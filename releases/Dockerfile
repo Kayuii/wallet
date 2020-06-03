@@ -12,7 +12,7 @@ ENV BITCOIN_URL https://github.com/dapperlink/DappCoin/releases/download/V${BITC
 RUN set -ex \
 	&& cd /tmp \
 	&& wget -qO bitcoin.zip "$BITCOIN_URL" \
-	&& unzip ubuntu.zip -d /tmp \
+	&& unzip bitcoin.zip -d /tmp \
 	&& cp /tmp/16.04/dappcoind /usr/local \
 	&& cp /tmp/16.04/dappcoin-cli /usr/local \
 	&& rm -rf /tmp/*
