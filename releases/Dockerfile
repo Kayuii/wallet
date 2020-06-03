@@ -14,8 +14,9 @@ ENV BITCOIN_URL https://github.com/dapperlink/DappCoin/releases/download/V${BITC
 RUN set -ex \
 	&& cd /tmp \
 	&& wget -qO bitcoin.zip "$BITCOIN_URL" \
-	&& 
-	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=*-wallet  --exclude=test_* \
+	&& unzip ubuntu.zip -d /tmp \
+	&& cp /tmp/16.04/dappcoind /usr/local \
+	&& cp /tmp/16.04/dappcoin-cli /usr/local \
 	&& rm -rf /tmp/*
 
 FROM debian:stretch-slim 
@@ -29,12 +30,12 @@ RUN set -ex \
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /usr/local/bin/litecoin* /usr/local/bin/
+COPY --from=builder /usr/local/bin/dappcoin* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.litecoin \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.litecoin
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.dappcoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.dappcoin
 
 COPY ./releases/docker-entrypoint.sh /entrypoint.sh
 
@@ -46,4 +47,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 # Port, RPC, Test Port, Test RPC
 EXPOSE 9333 9332 19333 19332
 
-CMD ["litecoind", "-daemon=0", "-server=0"]
+CMD ["dappcoind", "-daemon=0", "-server=0"]
