@@ -30,13 +30,13 @@ RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV PROJECTDIR=/opt/blocknet/dappercoin
-ENV BASEPREFIX=$PROJECTDIR/depends
+ENV BASEPREFIX=$PROJECTDIR
 ENV HOST=x86_64-pc-linux-gnu
 
 # Copy source files
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/dapperlink/DappCoin.git
+  && git clone --depth 1 --branch $VER https://github.com/dapperlink/DappCoin.git dappercoin
 
 # Build source
 RUN mkdir -p /opt/blockchain/config \
