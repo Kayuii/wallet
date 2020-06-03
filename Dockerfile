@@ -2,7 +2,7 @@
 # docker build --build-arg cores=8 -t blocknet/servicenode:blocknet .
 FROM ubuntu:bionic as builder
 
-ARG cores=1
+ARG cores=4
 ENV ecores=$cores
 ENV VER=V1.0.0.1
 
@@ -25,29 +25,35 @@ RUN add-apt-repository ppa:bitcoin/bitcoin \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV PROJECTDIR=/opt/blocknet/dappcoin
-ENV BASEPREFIX=$PROJECTDIR
+ENV BASEPREFIX=$PROJECTDIR/depends
 ENV HOST=x86_64-pc-linux-gnu
 
 # Copy source files
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/dapperlink/DappCoin.git dappcoin
+  && git clone --depth 1 --branch $VER https://github.com/dapperlink/DappCoin.git dappcoin \
+  && git clone --depth 1 https://github.com/dashpay/dash.git dash \
+  && cp -r ./dash/depends ./dappcoin \
+  && ls -al \
+  && ls -al dappcoin \
+  && ls -al dash 
 
-# Build source
+# # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.dappcoin \
-  && cd $PROJECTDIR \
+  && cd $BASEPREFIX \
+  && make -j$ecores && make install 
+
+RUN cd $PROJECTDIR \
   && chmod +x ./autogen.sh \
   && chmod +x ./autogen.sh; sync \
   && ./autogen.sh \
-  && ./configure \
+  && ./configure --with-gui=no --enable-hardening --prefix=`pwd`/depends/x86_64-pc-linux-gnu \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
   && make install
 
-
-  #&& ./configure --with-gui=no --enable-hardening --prefix=`pwd`/depends/x86_64-pc-linux-gnu \
 
 FROM debian:stretch-slim 
 

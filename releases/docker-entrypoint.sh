@@ -90,6 +90,8 @@ EOF
   ln -sfn "$BITCOIN_DATA" /home/bitcoin/.dappcoin 
 	chown -h bitcoin:bitcoin /home/bitcoin/.dappcoin 
 
+  chmod +x /usr/local/bin/dappcoin*
+
   echo "$0: setting data directory to $BITCOIN_DATA"
   set -- "$@" -datadir="$BITCOIN_DATA"
 fi
