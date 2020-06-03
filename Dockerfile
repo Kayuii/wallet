@@ -3,7 +3,7 @@
 
 FROM ubuntu:xenial
 
-ARG cores=1
+ARG cores=8
 ENV ecores=$cores
 
 RUN apt update \
