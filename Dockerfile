@@ -75,7 +75,7 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 9333 9332 19333 19332
+EXPOSE 12321 12322 22321 22322
 
 CMD ["dappcoind", "-daemon=0", "-server=0"]
 

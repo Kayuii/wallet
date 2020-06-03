@@ -15,6 +15,7 @@ RUN set -ex \
 	&& unzip bitcoin.zip -d /tmp \
 	&& cp /tmp/16.04/dappcoind /usr/local \
 	&& cp /tmp/16.04/dappcoin-cli /usr/local \
+	&& chmod +x /usr/local/dappcoin*
 	&& rm -rf /tmp/*
 
 FROM debian:stretch-slim 
@@ -43,6 +44,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 9333 9332 19333 19332
+EXPOSE 12321 12322 22321 22322
 
 CMD ["dappcoind", "-daemon=0", "-server=0"]
