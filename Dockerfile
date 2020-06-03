@@ -42,10 +42,11 @@ RUN mkdir -p /opt/blocknet \
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.dappercoin \
-  && cd $BASEPREFIX \
-  && make -j$ecores && make install \
+  && cd $BASEPREFIX && ls -al \
+  && make -j$ecores NO_QT=1 \
   && cd $PROJECTDIR \
   && chmod +x ./autogen.sh; sync \
+   && ls -al \
   && ./autogen.sh \
   && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \

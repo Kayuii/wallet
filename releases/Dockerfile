@@ -7,8 +7,6 @@ RUN set -ex \
 
 ENV BITCOIN_VERSION 1.0.0.1
 
-https://github.com/dapperlink/DappCoin/releases/download/V1.0.0.1/DAPP.zip
-
 ENV BITCOIN_URL https://github.com/dapperlink/DappCoin/releases/download/V${BITCOIN_VERSION}/ubuntu.zip
 
 RUN set -ex \
