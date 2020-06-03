@@ -2,18 +2,19 @@ FROM debian:stretch-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget unzip \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 0.17.1
+ENV BITCOIN_VERSION 1.0.0.1
 
-ENV BITCOIN_URL https://download.litecoin.org/litecoin-${BITCOIN_VERSION}/linux/litecoin-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 9cab11ba75ea4fb64474d4fea5c5b6851f9a25fe9b1d4f7fc9c12b9f190fed07
+https://github.com/dapperlink/DappCoin/releases/download/V1.0.0.1/DAPP.zip
+
+ENV BITCOIN_URL https://github.com/dapperlink/DappCoin/releases/download/V${BITCOIN_VERSION}/ubuntu.zip
 
 RUN set -ex \
 	&& cd /tmp \
-	&& wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
-	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
+	&& wget -qO bitcoin.zip "$BITCOIN_URL" \
+	&& 
 	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=*-wallet  --exclude=test_* \
 	&& rm -rf /tmp/*
 

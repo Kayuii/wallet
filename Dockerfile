@@ -4,7 +4,7 @@ FROM ubuntu:bionic as builder
 
 ARG cores=4
 ENV ecores=$cores
-ENV VER=v0.17.1
+ENV VER=V1.0.0.1
 
 RUN apt update \
   && apt install -y --no-install-recommends \
@@ -29,19 +29,19 @@ RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
      g++-8-multilib gcc-8-multilib binutils-gold \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV PROJECTDIR=/opt/blocknet/litecoin
+ENV PROJECTDIR=/opt/blocknet/dappercoin
 ENV BASEPREFIX=$PROJECTDIR/depends
 ENV HOST=x86_64-pc-linux-gnu
 
 # Copy source files
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/litecoin-project/litecoin.git
+  && git clone --depth 1 --branch $VER https://github.com/dapperlink/DappCoin.git
 
 # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.litecoin \
+  && ln -s /opt/blockchain/config /root/.dappercoin \
   && cd $BASEPREFIX \
   && make -j$ecores && make install \
   && cd $PROJECTDIR \
@@ -63,12 +63,12 @@ RUN set -ex \
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /bin/litecoin* /usr/local/bin/
+COPY --from=builder /bin/dappercoin* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.blocknetd \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.blocknetd
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.dappercoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.dappercoin
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
@@ -80,5 +80,5 @@ ENTRYPOINT ["/entrypoint.sh"]
 # Port, RPC, Test Port, Test RPC
 EXPOSE 9333 9332 19333 19332
 
-CMD ["litecoind", "-daemon=0", "-server=0"]
+CMD ["dappercoind", "-daemon=0", "-server=0"]
 
