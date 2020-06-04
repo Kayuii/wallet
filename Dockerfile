@@ -2,7 +2,7 @@
 # docker build --build-arg cores=8 -t blocknet/servicenode:blocknet .
 FROM ubuntu:bionic as builder
 
-ARG cores=4
+ARG cores=1
 ENV ecores=$cores
 ENV VER=V1.0.0.1
 
