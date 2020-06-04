@@ -16,6 +16,7 @@ RUN set -ex \
 	&& cp /tmp/16.04/dappcoind /usr/local \
 	&& cp /tmp/16.04/dappcoin-cli /usr/local \
 	&& chmod +x /usr/local/dappcoin*
+	&& chown root:root /usr/local/dappcoin*
 	&& rm -rf /tmp/*
 
 FROM debian:stretch-slim 

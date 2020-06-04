@@ -33,36 +33,30 @@ RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
   && git clone --depth 1 --branch $VER https://github.com/dapperlink/DappCoin.git dappcoin \
   && git clone --depth 1 https://github.com/dashpay/dash.git dash \
-  && cp -r ./dash/depends ./dappcoin \
-  && ls -al \
-  && ls -al dappcoin \
-  && ls -al dash 
+  && cp -r ./dash/depends ./dappcoin 
 
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.dappcoin \
   && cd $BASEPREFIX \
-  && make -j$ecores && make install 
-
-RUN cd $PROJECTDIR \
-  && chmod +x ./autogen.sh \
-  && chmod +x ./autogen.sh; sync \
+  && make -j$ecores && make install \
+  && cd $PROJECTDIR \
+  && chmod +x ./autogen.sh ./share/genbuild.sh \
   && ./autogen.sh \
-  && ./configure --with-gui=no --enable-hardening --prefix=`pwd`/depends/x86_64-pc-linux-gnu \
+  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
-  && make -j$ecores \
-  && make install
-
+  && make -j$ecores && make install \
+  && rm /bin/dappcoin-tx 
 
 FROM debian:stretch-slim 
-
-RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -qq --no-install-recommends gosu \
 	&& rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
