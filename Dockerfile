@@ -46,9 +46,12 @@ RUN mkdir -p /opt/blockchain/config \
   && ./autogen.sh \
   && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
-  && make -j$ecores && make install \
-  && rm /bin/dappcoin-tx 
-
+  && make -j$ecores \ 
+  && strip src/dappcoind \
+  && strip src/dappcoin-cli \ 
+  && strip src/dappcoin-tx \
+  && make install 
+  
 FROM debian:stretch-slim 
 
 RUN set -ex \
@@ -75,7 +78,7 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 12321 12322 22321 22322
+EXPOSE 12321 59187 52321 51475
 
 CMD ["dappcoind", "-daemon=0", "-server=0"]
 
