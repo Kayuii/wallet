@@ -42,19 +42,22 @@ RUN mkdir -p /opt/blockchain/config \
   && cd $PROJECTDIR \
   && chmod +x ./autogen.sh ./share/genbuild.sh \
   && ./autogen.sh \
-  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
+  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure \
+    CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' \
+    --disable-tests --disable-bench --disable-ccache --disable-maintainer-mode --disable-dependency-tracking \
+    --without-gui --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
-  && strip src/digibyted \
-  && strip src/digibyte-tx \
-  && strip src/digibyte-cli \
-  && make install 
+  && make install \
+  && strip /bin/digibyte-cli \
+  && strip /bin/digibyte-tx \
+  && strip /bin/digibyted
 
 FROM debian:stretch-slim 
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends gosu \
+	&& apt-get install -qq --no-install-recommends gosu libevent \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
