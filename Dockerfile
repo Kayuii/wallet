@@ -1,77 +1,68 @@
-# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch digibyte-v6.16.5.1
-# Build via docker:
-# docker build --build-arg cores=8 -t blocknetdx/dgb:latest .
-FROM ubuntu:bionic as builder
+FROM alpine:3.8 as builder
 
-ARG cores=1
-ENV ecores=$cores
-ENV VER=v7.17.2
+ENV BITCOIN_ROOT=/opt/blockchain
+ENV BDB_PREFIX="${BITCOIN_ROOT}/db4" BITCOIN_REPO="${BITCOIN_ROOT}/repo" PATH="${BITCOIN_ROOT}/bin:$PATH" BITCOIN_DATA="${BITCOIN_ROOT}/data"
+ENV BITCOIN_VER=v7.17.2
 
-RUN apt update \
-  && apt install -y --no-install-recommends \
-     software-properties-common \
-     ca-certificates \
-     wget curl git python vim \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN mkdir -p $BITCOIN_ROOT \
+  && mkdir -p $BDB_PREFIX \
+  && mkdir -p $BITCOIN_DATA 
 
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     curl build-essential libtool autotools-dev automake \
-     python3 bsdmainutils cmake libevent-dev autoconf automake \
-     pkg-config libssl-dev libboost-system-dev libboost-filesystem-dev \
-     libboost-chrono-dev libboost-program-options-dev libboost-test-dev \
-     libboost-thread-dev libdb4.8-dev libdb4.8++-dev libgmp-dev \
-     libminiupnpc-dev libzmq3-dev \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+WORKDIR ${BITCOIN_ROOT}
 
-ENV PROJECTDIR=/opt/blocknet/bitcoin
-ENV BASEPREFIX=$PROJECTDIR/depends
-ENV HOST=x86_64-pc-linux-gnu
+RUN apk update \
+  && apk upgrade \
+  && apk add --no-cache libressl boost libevent libtool libzmq boost-dev libressl-dev libevent-dev zeromq-dev
 
-RUN mkdir -p /opt/blocknet \
-  && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/digibyte/digibyte bitcoin 
+RUN apk add --no-cache git autoconf automake g++ make file
 
-# # Build source
-RUN mkdir -p /opt/blockchain/config \
-  && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.digibyte \
-  && cd $BASEPREFIX \
-  && make -j$ecores && make install \
-  && cd $PROJECTDIR \
-  && chmod +x ./autogen.sh ./share/genbuild.sh \
+RUN git clone --depth 1 --branch $BITCOIN_VER https://github.com/digibyte/digibyte $BITCOIN_REPO
+
+RUN	wget 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz' \
+  && echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef  db-4.8.30.NC.tar.gz' | sha256sum -c
+
+RUN tar -xzf db-4.8.30.NC.tar.gz
+RUN cd db-4.8.30.NC/build_unix/ \
+  && ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX \
+  && make -j4 \
+  && make install
+
+RUN cd $BITCOIN_REPO \
   && ./autogen.sh \
-  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure \
-    CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' \
-    --disable-tests --disable-bench --disable-ccache --disable-maintainer-mode --disable-dependency-tracking \
-    --without-gui --enable-hardening --prefix=/ \
-  && echo "Building with cores: $ecores" \
-  && make -j$ecores \
+  && ./configure LDFLAGS="-L${BDB_PREFIX}/lib/" CPPFLAGS="-I${BDB_PREFIX}/include/" \
+   --disable-tests --disable-bench --disable-ccache \
+   --with-gui=no --with-utils --with-libs --with-daemon \
+   --prefix=$BITCOIN_ROOT \
+  && make -j1 \
   && make install \
-  && strip /bin/digibyte-cli \
-  && strip /bin/digibyte-tx \
-  && strip /bin/digibyted
+  && rm -rf $BITCOIN_ROOT/db-4.8.30.NC* \
+  && rm -rf $BDB_PREFIX/docs \
+  && rm -rf $BITCOIN_REPO \
+  && strip $BITCOIN_ROOT/bin/digibyte-cli \
+  && strip $BITCOIN_ROOT/bin/digibyte-tx \
+  && strip $BITCOIN_ROOT/bin/digibyted
 
-FROM debian:stretch-slim 
+FROM alpine:3.8
 
-RUN set -ex \
-	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends gosu libevent \
-	&& rm -rf /var/lib/apt/lists/*
+RUN set -ex && \
+	  apk update && \
+    apk upgrade && \
+    apk add --no-cache libressl boost libevent libtool libzmq su-exec
 
-RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
+RUN addgroup -S bitcoin && adduser -S -D -g bitcoin bitcoin
 
-ENV BITCOIN_DATA=/opt/blockchain/data
+ENV BITCOIN_ROOT=/opt/blockchain 
+ENV BITCOIN_DATA="${BITCOIN_ROOT}/data"
 
-COPY --from=builder /bin/digibyte* /usr/local/bin/
+COPY --from=builder --chown=bitcoin:bitcoin ${BITCOIN_ROOT}/bin ${BITCOIN_ROOT}/bin
+COPY --from=builder /opt/blockchain/bin/digibyte* /usr/local/bin/
 
-RUN mkdir -p ${BITCOIN_DATA} \
-	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.digibyte \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.digibyte
+RUN mkdir -p $BITCOIN_ROOT \
+  && mkdir -p $BITCOIN_DATA \
+  && ln -sfn $BITCOIN_DATA /home/bitcoin/.bitcoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY docker-entrypoint1copy.sh /entrypoint.sh
 
 WORKDIR ${BITCOIN_DATA}
 VOLUME ["${BITCOIN_DATA}"]
@@ -79,6 +70,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 12024 14022  18332  19332
+EXPOSE 12024 14022	18332	19332
 
 CMD ["digibyted", "-daemon=0", "-server=0"]
