@@ -62,7 +62,7 @@ RUN mkdir -p $BITCOIN_ROOT \
   && ln -sfn $BITCOIN_DATA /home/bitcoin/.bitcoin \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
 
-COPY docker-entrypoint1copy.sh /entrypoint.sh
+COPY docker-entrypoint.sh /entrypoint.sh
 
 WORKDIR ${BITCOIN_DATA}
 VOLUME ["${BITCOIN_DATA}"]
