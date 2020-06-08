@@ -27,7 +27,10 @@ logtimestamps=1
 logips=1 
 rpcthreads=8 
 rpctimeout=15 
-rpcclienttimeout=15 
+rpcclienttimeout=15
+addnode=amer.supernode.iocoin.io
+addnode=emea.supernode.iocoin.io
+addnode=apac.supernode.iocoin.io
 EOF
     chown bitcoin:bitcoin "$BITCOIN_DATA/iocoin.conf"
   fi
