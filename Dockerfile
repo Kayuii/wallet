@@ -23,7 +23,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends gosu \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /opt/bitcoin/bth/* /usr/local/
+COPY --from=builder /opt/bitcoin/bth/* /usr/local/bin/
 
 # create data directory
 ENV BITCOIN_DATA /opt/blockchain/data
