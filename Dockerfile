@@ -28,7 +28,7 @@ ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/bgold/bgold repo 
+  && git clone --depth 1 --branch $VER https://github.com/BitcoinGod/BitcoinGod/ repo 
 
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
