@@ -1,8 +1,8 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic as builder
 
-ARG cores=4
+ARG cores=1
 ENV ecores=$cores
-ENV GOD_VER=v0.1.5.0
+ENV VER=v0.1.5.0
 
 RUN apt update \
   && apt install -y --no-install-recommends \
@@ -22,50 +22,56 @@ RUN add-apt-repository ppa:bitcoin/bitcoin \
      libminiupnpc-dev libzmq3-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# fix https://github.com/BitcoinGod/BitcoinGod/issues/1 for ubuntu 18.04
-# RUN apt install -y --no-install-recommends libssl1.0-dev \
-#   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ENV PROJECTDIR=/opt/blocknet/repo
+ENV BASEPREFIX=$PROJECTDIR/depends
+ENV HOST=x86_64-pc-linux-gnu
 
-# Build source
-RUN mkdir -p /opt/bitcoingod \
-  && mkdir -p /opt/blockchain/config \
+RUN mkdir -p /opt/blocknet \
+  && cd /opt/blocknet \
+  && git clone --depth 1 --branch $VER https://github.com/BitcoinGod/BitcoinGod.git repo 
+
+# # Build source
+RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.bitcoingod \
-  && cd /opt/bitcoingod \
-  && mkdir bitcoingod \
-  && git clone --depth 1 --branch $GOD_VER https://github.com/bitcoingod/bitcoingod bitcoingod \
-  && cd /opt/bitcoingod/bitcoingod/ \
-  && cd depends \
-  && make -j$ecores NO_QT=1 \
-  && cd .. \
-  && chmod +x ./autogen.sh \
+  && cd $BASEPREFIX \
+  && make -j$ecores && make install \
+  && cd $PROJECTDIR \
+  && chmod +x ./autogen.sh ./share/genbuild.sh \
   && ./autogen.sh \
-  && ./configure --with-gui=no --enable-hardening --prefix=`pwd`/depends/x86_64-pc-linux-gnu \
+  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
+  && echo "Building with cores: $ecores" \
   && make -j$ecores \
-  && cp /opt/bitcoingod/bitcoingod/src/bitcoingodd /opt/blockchain/bitcoingodd \
-  && cp /opt/bitcoingod/bitcoingod/src/bitcoingod-cli /opt/blockchain/bitcoingod-cli \
-  && rm -rf /opt/bitcoingod/
+  && strip src/bitcoingodd \
+  && strip src/bitcoingod-cli \
+  && make install 
 
-# Write default bitcoingod.conf (can be overridden on commandline)
-RUN echo "datadir=/opt/blockchain/data  \n\
-                                        \n\
-dbcache=256                             \n\
-maxmempool=512                          \n\
-port=8885                               \n\
-rpcport=8886                            \n\
-listen=1                                \n\
-server=1                                \n\
-logtimestamps=1                         \n\
-logips=1                                \n\
-rpcthreads=8                            \n\
-rpcallowip=127.0.0.1                    \n\
-rpctimeout=15                           \n\
-rpcclienttimeout=15                     \n" > /opt/blockchain/config/bitcoingod.conf
+FROM debian:stretch-slim 
 
-WORKDIR /opt/blockchain/
-VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends gosu \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
+
+ENV BITCOIN_DATA=/opt/blockchain/data
+
+COPY --from=builder /bin/bitcoingod* /usr/local/bin/
+
+RUN mkdir -p ${BITCOIN_DATA} \
+	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoingod \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoingod
+
+COPY docker-entrypoint.sh /entrypoint.sh
+
+WORKDIR ${BITCOIN_DATA}
+VOLUME ["${BITCOIN_DATA}"]
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 8885 8886 18885 18886
+EXPOSE 6661 6662  18332  19332
 
-CMD ["/opt/blockchain/bitcoingodd", "-daemon=0"]
+CMD ["bitcoingodd", "-daemon=0", "-server=0"]
