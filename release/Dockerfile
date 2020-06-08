@@ -23,12 +23,12 @@ RUN set -ex \
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.DeviantCore \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.DeviantCore
 VOLUME /opt/blockchain/data
 
-COPY ./release/docker-entrypoint.sh /entrypoint.sh
+COPY ./docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 8332 8333 18332 18333
-CMD ["bitcoind"]
+EXPOSE 22618 22617 32618 32617
+CMD ["deviantd"]

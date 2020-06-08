@@ -1,11 +1,8 @@
-# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch digibyte-v6.16.5.1
-# Build via docker:
-# docker build --build-arg cores=8 -t blocknetdx/dgb:latest .
 FROM ubuntu:bionic as builder
 
 ARG cores=1
 ENV ecores=$cores
-ENV VER=v7.17.2
+ENV VER=v4.0.0
 
 RUN apt update \
   && apt install -y --no-install-recommends \
@@ -25,18 +22,18 @@ RUN add-apt-repository ppa:bitcoin/bitcoin \
      libminiupnpc-dev libzmq3-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV PROJECTDIR=/opt/blocknet/bitcoin
+ENV PROJECTDIR=/opt/blocknet/repo
 ENV BASEPREFIX=$PROJECTDIR/depends
 ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/digibyte/digibyte bitcoin 
+  && git clone --depth 1 --branch $VER https://github.com/Deviantcoin/Source.git repo 
 
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.digibyte \
+  && ln -s /opt/blockchain/config /root/.DeviantCore \
   && cd $BASEPREFIX \
   && make -j$ecores && make install \
   && cd $PROJECTDIR \
@@ -45,9 +42,9 @@ RUN mkdir -p /opt/blockchain/config \
   && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
-  && strip src/digibyted \
-  && strip src/digibyte-tx \
-  && strip src/digibyte-cli \
+  && strip src/deviantd \
+  && strip src/deviant-tx \
+  && strip src/deviant-cli \
   && make install 
 
 FROM debian:stretch-slim 
@@ -61,12 +58,12 @@ RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /bin/digibyte* /usr/local/bin/
+COPY --from=builder /bin/deviant* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.digibyte \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.digibyte
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.DeviantCore \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.DeviantCore
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
@@ -76,6 +73,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 12024 14022  18332  19332
+EXPOSE 22618 22617 32618 32617
 
-CMD ["digibyted", "-daemon=0", "-server=0"]
+CMD ["deviantd", "-daemon=0", "-server=0"]
