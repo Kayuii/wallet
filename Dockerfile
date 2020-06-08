@@ -5,7 +5,7 @@ FROM ubuntu:bionic as builder
 
 ARG cores=1
 ENV ecores=$cores
-ENV VER=v7.17.2
+ENV VER=v0.17.1
 
 RUN apt update \
   && apt install -y --no-install-recommends \
