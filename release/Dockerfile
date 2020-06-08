@@ -1,10 +1,8 @@
-FROM debian:stretch-slim
-
-RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
+FROM debian:stretch-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gpg wget binutils sudo \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_VERSION 5.0.0.0
@@ -18,8 +16,19 @@ RUN set -ex \
 	&& echo "$BITCOIN_SHA256 bitcoin.sh" | sha256sum -c - \
 	&& chmod +x bitcoin.sh \
 	&& ./bitcoin.sh \
-	&& strip /usr/local/bin/iocoind
+	&& strip /usr/local/bin/iocoind \
 	&& rm -rf /tmp/*
+
+FROM debian:stretch-slim 
+
+RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
+
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends gosu \
+	&& rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local/bin/iocoind /usr/local/bin/
 
 # create data directory
 ENV BITCOIN_DATA /opt/blockchain/data
