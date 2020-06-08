@@ -30,5 +30,5 @@ VOLUME /opt/blockchain/data
 COPY ./docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 8332 8333 18332 18333
+EXPOSE 6661 6662  16661  16662
 CMD ["emercoind"]
