@@ -2,15 +2,15 @@
 set -e
 
 if [ $(echo "$1" | cut -c1) = "-" ]; then
-  echo "$0: assuming arguments for digibyted"
-  set -- digibyted "$@"
+  echo "$0: assuming arguments for bgoldd"
+  set -- bgoldd "$@"
 fi
 
-if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "digibyted" ]; then
+if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "bgoldd" ]; then
 mkdir -p "$BITCOIN_DATA"
   
-  if [ ! -s "$BITCOIN_DATA/digibyte.conf" ]; then
-    cat <<EOF > "$BITCOIN_DATA/digibyte.conf"
+  if [ ! -s "$BITCOIN_DATA/bitcoingold.conf" ]; then
+    cat <<EOF > "$BITCOIN_DATA/bitcoingold.conf"
 printtoconsole=1
 rpcallowip=::/0
 rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
@@ -19,8 +19,8 @@ datadir=$BITCOIN_DATA
 dbcache=256
 maxmempool=512
 maxmempoolxbridge=128     
-port=12024 
-rpcport=14022 
+port=8338 
+rpcport=8339 
 listen=1 
 server=1 
 logtimestamps=1 
@@ -29,18 +29,18 @@ rpcthreads=8
 rpctimeout=15 
 rpcclienttimeout=15 
 EOF
-    chown bitcoin:bitcoin "$BITCOIN_DATA/digibyte.conf"
+    chown bitcoin:bitcoin "$BITCOIN_DATA/bitcoingold.conf"
   fi
 
   chown -R bitcoin:bitcoin "$BITCOIN_DATA"
-  ln -sfn "$BITCOIN_DATA" /home/bitcoin/.digibyte 
-	chown -h bitcoin:bitcoin /home/bitcoin/.digibyte 
+  ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoingold 
+	chown -h bitcoin:bitcoin /home/bitcoin/.bitcoingold 
 
   echo "$0: setting data directory to $BITCOIN_DATA"
   set -- "$@" -datadir="$BITCOIN_DATA"
 fi
 
-if [ "$1" = "digibyted" ] || [ "$1" = "digibyte-cli" ] || [ "$1" = "digibyte-tx" ]; then
+if [ "$1" = "bgoldd" ] || [ "$1" = "bgold-cli" ] || [ "$1" = "bgold-tx" ]; then
   echo "run : $@ "
   exec gosu bitcoin "$@"
 fi
