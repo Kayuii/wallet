@@ -6,12 +6,12 @@ RUN set -ex \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_VERSION v0.15.1.7
-ENV BITCOIN_URL https://github.com/BitcoinHot/bitcoinhot.git
+ENV BITCOIN_URL https://github.com/BitcoinHot/Bitcoinhot-EOL.git
 
 RUN mkdir -p /opt/bitcoin \
   && cd /opt/bitcoin \
-  && git clone --depth 1 --branch master ${BITCOIN_URL} \
-  && mv ./bitcoinhot/bitcoinhot-linux.7z ./bitcoin.7z \
+  && git clone --depth 1 --branch master ${BITCOIN_URL} repo \
+  && mv ./repo/bitcoinhot-linux.7z ./bitcoin.7z \
   && 7z x bitcoin.7z -o./bth -x\!bitcoinhot-qt
 
 FROM debian:stretch-slim
@@ -23,28 +23,20 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends gosu \
 	&& rm -rf /var/lib/apt/lists/*
 
-
-ENV BITCOIN_DATA=/opt/blockchain/data
-ENV BITCOIN_PREFIX=/opt/bitcoinhot
-ENV PATH=${BITCOIN_PREFIX}:$PATH
-
-COPY --from=builder /opt/bitcoin/bth ${BITCOIN_PREFIX}
-
-# RUN ls -alh ${BITCOIN_PREFIX}
+COPY --from=builder /opt/bitcoin/bth/* /usr/local/
 
 # create data directory
+ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
 	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoinhot \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoinhot \
-	&& chown -R bitcoin:bitcoin "$BITCOIN_PREFIX" \
-	&& chmod -R a+x "$BITCOIN_PREFIX" \
-	&& echo "export PATH=$BITCOIN_PREFIX:$PATH" >> /etc/profile
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoinhot
+VOLUME /opt/blockchain/data
 
 WORKDIR ${BITCOIN_DATA}
 VOLUME ${BITCOIN_DATA}
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY ./docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 7721 7722 17721 17722 17444
