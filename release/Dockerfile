@@ -18,6 +18,7 @@ RUN set -ex \
 	&& echo "$BITCOIN_SHA256 bitcoin.sh" | sha256sum -c - \
 	&& chmod +x bitcoin.sh \
 	&& ./bitcoin.sh \
+	&& strip /usr/local/bin/iocoind
 	&& rm -rf /tmp/*
 
 # create data directory
