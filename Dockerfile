@@ -1,4 +1,4 @@
-# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch digibyte-v6.16.5.1
+# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch emercoin-v6.16.5.1
 # Build via docker:
 # docker build --build-arg cores=8 -t blocknetdx/dgb:latest .
 FROM ubuntu:bionic as builder
@@ -36,7 +36,7 @@ RUN mkdir -p /opt/blocknet \
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.digibyte \
+  && ln -s /opt/blockchain/config /root/.emercoin \
   && cd $BASEPREFIX \
   && make -j$ecores && make install \
   && cd $PROJECTDIR \
@@ -45,9 +45,8 @@ RUN mkdir -p /opt/blockchain/config \
   && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
-  && strip src/digibyted \
-  && strip src/digibyte-tx \
-  && strip src/digibyte-cli \
+  && strip src/emercoind \
+  && strip src/emercoin-cli \
   && make install 
 
 FROM debian:stretch-slim 
@@ -61,12 +60,12 @@ RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /bin/digibyte* /usr/local/bin/
+COPY --from=builder /bin/emercoin* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.digibyte \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.digibyte
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.emercoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.emercoin
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
@@ -78,4 +77,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 # Port, RPC, Test Port, Test RPC
 EXPOSE 6661 6662  16661  16662
 
-CMD ["digibyted", "-daemon=0", "-server=0"]
+CMD ["emercoind", "-daemon=0", "-server=0"]

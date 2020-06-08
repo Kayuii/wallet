@@ -9,13 +9,12 @@ RUN set -ex \
 
 ENV BITCOIN_VERSION 0.7.10
 ENV BITCOIN_URL https://github.com/emercoin/emercoin/releases/download/v${BITCOIN_VERSION}emc/emercoin-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 596a2f8a1d23919a9daf00686df195a50857a8aaddc40726b2ff4b364cdb6afe
+ENV BITCOIN_SHA256 6e851f289c652fd1055bd6084abe454ad172cc8df0926efcf05441e58fc14973
 
 # install bitcoin binaries
 RUN set -ex \
 	&& cd /tmp \
 	&& wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
-	&& sha256sum bitcoin.tar.gz \
 	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
 	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=test-* \
 	&& rm -rf /tmp/*
@@ -24,12 +23,12 @@ RUN set -ex \
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.emercoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.emercoin
 VOLUME /opt/blockchain/data
 
 COPY ./docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 8332 8333 18332 18333
-CMD ["bitcoind"]
+CMD ["emercoind"]
