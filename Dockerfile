@@ -1,11 +1,8 @@
-# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch emercoin-v6.16.5.1
-# Build via docker:
-# docker build --build-arg cores=8 -t blocknetdx/dgb:latest .
 FROM ubuntu:bionic as builder
 
 ARG cores=1
 ENV ecores=$cores
-ENV VER=v7.17.2
+ENV VER=v0.7.10emc
 
 RUN apt update \
   && apt install -y --no-install-recommends \
