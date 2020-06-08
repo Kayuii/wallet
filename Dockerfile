@@ -35,7 +35,7 @@ RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.bitcoingod \
   && cd $BASEPREFIX \
-  && make -j$ecores && make install \
+  && make -j4 && make install \
   && cd $PROJECTDIR \
   && chmod +x ./autogen.sh ./share/genbuild.sh \
   && ./autogen.sh \
@@ -50,7 +50,7 @@ FROM debian:stretch-slim
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends gosu \
+	&& apt-get install -qq --no-install-recommends gosu build-essential \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
