@@ -25,13 +25,13 @@ RUN add-apt-repository ppa:bitcoin/bitcoin \
      libminiupnpc-dev libzmq3-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV PROJECTDIR=/opt/blocknet/bitcoin
+ENV PROJECTDIR=/opt/blocknet/repo
 ENV BASEPREFIX=$PROJECTDIR/depends
 ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/digibyte/digibyte bitcoin 
+  && git clone --depth 1 --branch $VER https://github.com/emercoin/emercoin.git repo 
 
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
@@ -76,6 +76,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 12024 14022  18332  19332
+EXPOSE 6661 6662  16661  16662
 
 CMD ["digibyted", "-daemon=0", "-server=0"]
