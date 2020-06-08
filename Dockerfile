@@ -31,7 +31,9 @@ ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/IOCoin/DIONS.git repo 
+  && git clone --depth 1 --branch $VER https://github.com/IOCoin/DIONS.git repo \
+  && git clone --depth 1 https://github.com/bitcoin/bitcoin.git bitcoin \
+  && cp -r ./bitcoin/depends ./repo 
 
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
