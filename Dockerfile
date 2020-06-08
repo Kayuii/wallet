@@ -40,15 +40,16 @@ RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.iocoin \
   && cd $BASEPREFIX \
-  && make -j$ecores && make install \
+  && make -j4 && make install \
   && cd $PROJECTDIR \
-  && chmod +x ./autogen.sh ./share/genbuild.sh \
-  && ./autogen.sh \
-  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
-  && echo "Building with cores: $ecores" \
-  && make -j$ecores \
-  && strip src/iocoind \
-  && strip src/iocoin-cli \
+  && chmod +x ./autogen.sh ./share/genbuild.sh 
+  
+  # \
+  # && ./autogen.sh \
+RUN cd $PROJECTDIR/src \
+  && make -f makefile.unix -j$ecores  \
+  && strip iocoind \
+  && strip iocoin-cli \
   && make install 
 
 FROM debian:stretch-slim 
