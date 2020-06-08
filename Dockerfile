@@ -38,7 +38,8 @@ RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.lightpaycoin \
   && cd $BASEPREFIX \
-  && make -j$ecores && make install \
+  && chmod +x config.* \
+  && make -j4 && make install \
   && cd $PROJECTDIR \
   && chmod +x ./autogen.sh ./share/genbuild.sh \
   && ./autogen.sh \
