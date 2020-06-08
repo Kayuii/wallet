@@ -40,9 +40,9 @@ RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.iocoin \
   && cd $BASEPREFIX \
-  && make -j4 && make install \
-  && cd $PROJECTDIR \
-  && chmod +x ./autogen.sh ./share/genbuild.sh 
+  && make -j4 && make install 
+  # && cd $PROJECTDIR \
+  # && chmod +x ./autogen.sh ./share/genbuild.sh 
   
   # \
   # && ./autogen.sh \
