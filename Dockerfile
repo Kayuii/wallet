@@ -33,7 +33,7 @@ RUN mkdir -p /opt/blocknet \
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.bgold \
+  && ln -s /opt/blockchain/config /root/.bitcoingold \
   && cd $BASEPREFIX \
   && make -j$ecores && make install \
   && cd $PROJECTDIR \
@@ -72,6 +72,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 12024 14022  18332  19332
+EXPOSE 8338 8339 18338 18339
 
 CMD ["bgoldd", "-daemon=0", "-server=0"]
