@@ -2,7 +2,7 @@ FROM ubuntu:bionic as builder
 
 ARG cores=1
 ENV ecores=$cores
-ENV VER=v4.0.0
+ENV VER=v4.0.0.0
 
 RUN apt update \
   && apt install -y --no-install-recommends \
