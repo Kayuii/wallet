@@ -12,7 +12,8 @@ RUN mkdir -p /opt/bitcoin \
   && cd /opt/bitcoin \
   && git clone --depth 1 --branch master ${BITCOIN_URL} repo \
   && mv ./repo/bitcoinhot-linux.7z ./bitcoin.7z \
-  && 7z x bitcoin.7z -o./bth -x\!bitcoinhot-qt
+  && 7z x bitcoin.7z -o./bth -x\!bitcoinhot-qt \
+  && chmod +x /opt/bitcoin/bth/*
 
 FROM debian:stretch-slim
 
