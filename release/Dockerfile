@@ -9,23 +9,22 @@ RUN set -ex \
 
 ENV BITCOIN_VERSION 1.0.1.0
 ENV BITCOIN_URL https://github.com/lpcproject/LightPayCoin/releases/download/v1.0.1.0/lightpaycoin-1.0.1-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 596a2f8a1d23919a9daf00686df195a50857a8aaddc40726b2ff4b364cdb6afe
+ENV BITCOIN_SHA256 34bf1b032ebb68cfa35e34a42c82b6b91e229b631c0006b599df7c6f8dd01dc6
 
 # install bitcoin binaries
 RUN set -ex \
 	&& cd /tmp \
 	&& wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
-	&& sha256sum bitcoin.tar.gz \
 	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
-	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=test-* \
+	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=test_* \
 	&& rm -rf /tmp/*
 
 # create data directory
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.lightpaycoind \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.lightpaycoind
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.lightpaycoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.lightpaycoin
 VOLUME /opt/blockchain/data
 
 COPY ./docker-entrypoint.sh /entrypoint.sh
