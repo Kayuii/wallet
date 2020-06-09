@@ -13,21 +13,25 @@ if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "omnicored" ]; then
 
   if [ ! -s "$BITCOIN_DATA/bitcoin.conf" ]; then
     cat <<EOF > "$BITCOIN_DATA/bitcoin.conf"
-datadir=$BITCOIN_DATA
+server=1 
+listen=1
+printtoconsole=1
+rpcallowip=::/0
+rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
+rpcuser=${BITCOIN_RPC_USER:-bitcoin}
+datadir=$BITCOIN_DATA 
 dbcache=256
 maxmempool=512
-port=8333
-rpcport=8332
-rpcbind=0.0.0.0:8332
-listen=1
-server=1
-maxconnections=16
-logtimestamps=1
-logips=1
-rpcallowip=::/0
-rpcthreads=8
-rpctimeout=15
-rpcclienttimeout=15
+maxmempoolxbridge=128   
+maxconnections=16  
+port=12024 
+rpcport=14022 
+rpcbind=127.0.0.1:14022
+logtimestamps=1 
+logips=1 
+rpcthreads=8 
+rpctimeout=15 
+rpcclienttimeout=15 
 EOF
     chown bitcoin:bitcoin "$BITCOIN_DATA/bitcoin.conf"
   fi
