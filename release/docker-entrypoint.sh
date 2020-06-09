@@ -3,16 +3,16 @@ set -e
 
 export PATH="${BITCOIN_ROOT}/bin:$PATH"
 if [ $(echo "$1" | cut -c1) = "-" ]; then
-  echo "$0: assuming arguments for omnicored"
+  echo "$0: assuming arguments for scrivd"
 
-  set -- omnicored "$@"
+  set -- scrivd "$@"
 fi
 
-if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "omnicored" ]; then
+if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "scrivd" ]; then
   mkdir -p "$BITCOIN_DATA"
 
-  if [ ! -s "$BITCOIN_DATA/bitcoin.conf" ]; then
-    cat <<EOF > "$BITCOIN_DATA/bitcoin.conf"
+  if [ ! -s "$BITCOIN_DATA/scriv.conf" ]; then
+    cat <<EOF > "$BITCOIN_DATA/scriv.conf"
 datadir=$BITCOIN_DATA
 dbcache=256
 maxmempool=512
@@ -29,7 +29,7 @@ rpcthreads=8
 rpctimeout=15
 rpcclienttimeout=15
 EOF
-    chown bitcoin:bitcoin "$BITCOIN_DATA/bitcoin.conf"
+    chown bitcoin:bitcoin "$BITCOIN_DATA/scriv.conf"
   fi
 
   chown -R bitcoin:bitcoin "$BITCOIN_DATA"
@@ -41,7 +41,7 @@ EOF
   set -- "$@" -datadir="$BITCOIN_DATA"
 fi
 
-if [ "$1" = "omnicored" ] || [ "$1" = "omnicore-cli" ] || [ "$1" = "bitcoin-tx" ]; then
+if [ "$1" = "scrivd" ] || [ "$1" = "scriv-cli" ] || [ "$1" = "scriv-tx" ]; then
   echo "run : $@ "
   exec su-exec bitcoin "$@"
 fi
