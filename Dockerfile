@@ -1,7 +1,4 @@
-# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch iocoin-v6.16.5.1
-# Build via docker:
-# docker build --build-arg cores=8 -t blocknetdx/dgb:latest .
-FROM ubuntu:bionic as builder
+FROM debian:buster as builder
 
 ARG cores=1
 ENV ecores=$cores
@@ -14,14 +11,13 @@ RUN apt update \
      wget curl git python vim \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt update \
+RUN apt update \
   && apt install -y --no-install-recommends \
      curl build-essential libtool autotools-dev automake \
      python3 bsdmainutils cmake libevent-dev autoconf automake \
      pkg-config libssl-dev libboost-system-dev libboost-filesystem-dev \
      libboost-chrono-dev libboost-program-options-dev libboost-test-dev \
-     libboost-thread-dev libdb4.8-dev libdb4.8++-dev libgmp-dev \
+     libboost-thread-dev libgmp-dev \
      libminiupnpc-dev libzmq3-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -31,16 +27,14 @@ ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/IOCoin/DIONS.git repo \
-  && git clone --depth 1 https://github.com/bitcoin/bitcoin.git bitcoin \
-  && cp -r ./bitcoin/depends ./repo 
+  && git clone --depth 1 --branch $VER https://github.com/IOCoin/DIONS.git repo 
 
-# # Build source
+# Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.iocoin \
-  && cd $BASEPREFIX \
-  && make -j4 && make install 
+  && ln -s /opt/blockchain/config /root/.iocoin 
+  # && cd $BASEPREFIX \
+  # && make -j4 && make install 
   # && cd $PROJECTDIR \
   # && chmod +x ./autogen.sh ./share/genbuild.sh 
   
