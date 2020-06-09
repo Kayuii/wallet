@@ -5,7 +5,7 @@ FROM ubuntu:bionic as builder
 
 ARG cores=1
 ENV ecores=$cores
-ENV VER=v7.17.2
+ENV VER=1.1.0
 
 RUN apt update \
   && apt install -y --no-install-recommends \
@@ -31,18 +31,22 @@ ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/digibyte/digibyte repo 
+  && git clone --depth 1 --branch $VER https://github.com/ScrivNetwork/scriv.git repo 
 
-# # Build source
+# Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
   && ln -s /opt/blockchain/config /root/.digibyte \
   && cd $BASEPREFIX \
-  && make -j$ecores && make install \
-  && cd $PROJECTDIR \
+  && make -j$ecores && make install 
+  
+RUN cd $PROJECTDIR \
   && chmod +x ./autogen.sh ./share/genbuild.sh \
   && ./autogen.sh \
-  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --without-gui --enable-hardening --prefix=/ \
+  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 \
+    CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' \
+    --disable-tests --disable-bench --disable-ccache --disable-maintainer-mode --disable-dependency-tracking \
+    --without-gui --with-gui=no --with-utils --with-libs --with-daemon --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
   && strip src/digibyted \
