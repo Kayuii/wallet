@@ -53,7 +53,7 @@ RUN mkdir -p /opt/blockchain/config \
   && strip src/viacoin-cli \
   && make install 
 
-FROM debian:stretch-slim 
+FROM debian:buster-slim 
 
 RUN set -ex \
 	&& apt-get update \
