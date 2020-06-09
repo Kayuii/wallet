@@ -34,10 +34,6 @@ EOF
     chown bitcoin:bitcoin "$BITCOIN_DATA/snowgem.conf"
   fi
 
-  if [ ! -d "/home/bitcoin/.zcash-params" ]; then
-    exec gosu bitcoin fetch-params.sh
-  fi
-
   chown -R bitcoin:bitcoin "$BITCOIN_DATA"
   ln -sfn "$BITCOIN_DATA" /home/bitcoin/.snowgem 
 	chown -h bitcoin:bitcoin /home/bitcoin/.snowgem 
@@ -47,13 +43,15 @@ EOF
 fi
 
 if [ "$1" = "snowgemd" ] || [ "$1" = "snowgem-cli" ] || [ "$1" = "snowgem-tx" ]; then
-    echo "run : $@ "
-    exec gosu bitcoin "$@"
-  else
-    if [ ! -d "/root/.zcash-params" ]; then
-      fetch-params.sh
+    if [ ! -d "/home/bitcoin/.zcash-params" ]; then
+      gosu bitcoin fetch-params.sh
     fi
+    echo "run : $@ "
+    exec gosu bitcoin "$@"    
 fi
 
+if [ ! -d "/root/.zcash-params" ]; then
+  fetch-params.sh
+fi
 echo "run some: $@"
 exec "$@"
