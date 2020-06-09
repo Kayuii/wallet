@@ -37,5 +37,5 @@ VOLUME /opt/blockchain/data
 COPY ./docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 16113 8333 26113 18333
+EXPOSE 16113 16112 26113 26112
 CMD ["snowgemd"]

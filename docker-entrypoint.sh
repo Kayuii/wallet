@@ -22,8 +22,8 @@ dbcache=256
 maxmempool=512
 maxmempoolxbridge=128   
 maxconnections=16  
-port=12024 
-rpcport=14022 
+port=16113 
+rpcport=16112 
 rpcbind=127.0.0.1:14022
 logtimestamps=1 
 logips=1 
@@ -32,6 +32,10 @@ rpctimeout=15
 rpcclienttimeout=15 
 EOF
     chown bitcoin:bitcoin "$BITCOIN_DATA/snowgem.conf"
+  fi
+
+  if [ ! -d "/home/bitcoin/.zcash-params" ]; then
+    exec gosu bitcoin fetch-params.sh
   fi
 
   chown -R bitcoin:bitcoin "$BITCOIN_DATA"
@@ -43,8 +47,12 @@ EOF
 fi
 
 if [ "$1" = "snowgemd" ] || [ "$1" = "snowgem-cli" ] || [ "$1" = "snowgem-tx" ]; then
-  echo "run : $@ "
-  exec gosu bitcoin "$@"
+    echo "run : $@ "
+    exec gosu bitcoin "$@"
+  else
+    if [ ! -d "/root/.zcash-params" ]; then
+      fetch-params.sh
+    fi
 fi
 
 echo "run some: $@"

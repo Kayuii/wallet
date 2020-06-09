@@ -80,6 +80,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 12024 14022  18332  19332
+EXPOSE 16113 16112 26113 26112
 
 CMD ["snowgemd", "-daemon=0", "-server=0"]
