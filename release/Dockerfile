@@ -31,5 +31,5 @@ VOLUME /opt/blockchain/data
 COPY ./docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 5223 8333 25223 18333
+EXPOSE 5223 5222 25223 25222
 CMD ["viacoind"]

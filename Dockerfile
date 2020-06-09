@@ -79,6 +79,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 12024 14022  18332  19332
+EXPOSE 5223 5222 25223 25222
 
 CMD ["viacoind", "-daemon=0", "-server=0"]
