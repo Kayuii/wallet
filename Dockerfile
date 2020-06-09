@@ -43,8 +43,8 @@ RUN mkdir -p /opt/blockchain/config \
   && chmod +x ./autogen.sh ./share/genbuild.sh \
   && ./autogen.sh \
   && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 \
-    CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' 
-    --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --disable-tests --disable-bench
+    CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' \
+    --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --disable-tests --disable-bench \
     --without-gui --with-gui=no --with-utils --with-libs --with-daemon --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
