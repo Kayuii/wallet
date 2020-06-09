@@ -52,7 +52,7 @@ RUN cd $PROJECTDIR \
   && strip src/emercoin-cli \
   && make install 
 
-FROM debian:stretch-slim 
+FROM debian:buster-slim 
 
 RUN set -ex \
 	&& apt-get update \
