@@ -5,7 +5,7 @@ FROM ubuntu:bionic as builder
 
 ARG cores=1
 ENV ecores=$cores
-ENV VER=v7.17.2
+ENV VER=v3000457-20190909
 
 RUN apt update \
   && apt install -y --no-install-recommends \
@@ -14,15 +14,12 @@ RUN apt update \
      wget curl git python vim \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     curl build-essential libtool autotools-dev automake \
-     python3 bsdmainutils cmake libevent-dev autoconf automake \
-     pkg-config libssl-dev libboost-system-dev libboost-filesystem-dev \
-     libboost-chrono-dev libboost-program-options-dev libboost-test-dev \
-     libboost-thread-dev libdb4.8-dev libdb4.8++-dev libgmp-dev \
-     libminiupnpc-dev libzmq3-dev \
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
+    build-essential pkg-config libc6-dev m4 g++-multilib \
+    autoconf libtool ncurses-dev unzip git python python-zmq \
+    zlib1g-dev wget bsdmainutils automake curl libgconf-2-4 \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV PROJECTDIR=/opt/blocknet/repo
@@ -34,25 +31,29 @@ RUN mkdir -p /opt/blocknet \
   && git clone --depth 1 --branch $VER https://github.com/Snowgem/Snowgem.git repo 
 
 # # Build source
-RUN mkdir -p /opt/blockchain/config \
-  && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.snowgem \
-  && cd $BASEPREFIX \
-  && make -j$ecores && make install 
+# RUN mkdir -p /opt/blockchain/config \
+#   && mkdir -p /opt/blockchain/data \
+#   && ln -s /opt/blockchain/config /root/.snowgem \
+#   && cd $BASEPREFIX \
+#   && make -j$ecores && make install 
   
+# RUN cd $PROJECTDIR \
+#   && chmod +x ./autogen.sh ./share/genbuild.sh \
+#   && ./autogen.sh \
+#   && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 \
+#     CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' \
+#     --disable-tests --disable-bench --disable-ccache --disable-maintainer-mode --disable-dependency-tracking \
+#     --without-gui --with-gui=no --with-utils --with-libs --with-daemon --enable-hardening --prefix=/ \
+#   && echo "Building with cores: $ecores" \
+#   && make -j$ecores \
+#   && strip src/snowgemd \
+#   && strip src/snowgem-tx \
+#   && strip src/snowgem-cli \
+#   && make install 
+
 RUN cd $PROJECTDIR \
-  && chmod +x ./autogen.sh ./share/genbuild.sh \
-  && ./autogen.sh \
-  && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 \
-    CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' \
-    --disable-tests --disable-bench --disable-ccache --disable-maintainer-mode --disable-dependency-tracking \
-    --without-gui --with-gui=no --with-utils --with-libs --with-daemon --enable-hardening --prefix=/ \
-  && echo "Building with cores: $ecores" \
-  && make -j$ecores \
-  && strip src/snowgemd \
-  && strip src/snowgem-tx \
-  && strip src/snowgem-cli \
-  && make install 
+  && ./zcutil/build.sh
+  
 
 FROM debian:stretch-slim 
 
