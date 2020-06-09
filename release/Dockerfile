@@ -7,28 +7,29 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 0.21.2
-ENV BITCOIN_URL https://github.com/Bitcoin-ABC/bitcoin-abc/releases/download/v${BITCOIN_VERSION}/bitcoin-abc-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 596a2f8a1d23919a9daf00686df195a50857a8aaddc40726b2ff4b364cdb6afe
+ENV BITCOIN_VERSION 0.16.3
+ENV BITCOIN_URL https://github.com/viacoin/viacoin/releases/download/v${BITCOIN_VERSION}/viacoin-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_SHA256 4b84d8f1485d799fdff6cb4b1a316c00056b8869b53a702cd8ce2cc581bae59a
 
 # install bitcoin binaries
 RUN set -ex \
 	&& cd /tmp \
 	&& wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
+	&& sha256sum bitcoin.tar.gz \
 	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
-	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=test-* \
+	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=test_* \
 	&& rm -rf /tmp/*
 
 # create data directory
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.viacoin \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.viacoin
 VOLUME /opt/blockchain/data
 
-COPY ./release/docker-entrypoint.sh /entrypoint.sh
+COPY ./docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 8332 8333 18332 18333
-CMD ["bitcoind"]
+EXPOSE 5223 8333 25223 18333
+CMD ["viacoind"]
