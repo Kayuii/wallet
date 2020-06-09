@@ -44,8 +44,13 @@ RUN cd $PROJECTDIR \
   && chmod +x ./autogen.sh ./share/genbuild.sh \
   && ./autogen.sh \
   && CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure CC=gcc-8 CXX=g++-8 \
+<<<<<<< HEAD
     CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' \
     --disable-tests --disable-bench --disable-ccache --disable-maintainer-mode --disable-dependency-tracking \
+=======
+    CFLAGS='-Wno-deprecated' CXXFLAGS='-Wno-deprecated' 
+    --disable-ccache --disable-maintainer-mode --disable-dependency-tracking --disable-tests --disable-bench
+>>>>>>> 63bddacb797cb395144c511f1ff7daeee1d9a297
     --without-gui --with-gui=no --with-utils --with-libs --with-daemon --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
