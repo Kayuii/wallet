@@ -58,7 +58,7 @@ FROM debian:stretch-slim
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends gosu \
+	&& apt-get install -qq --no-install-recommends ca-certificates gosu wget \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
