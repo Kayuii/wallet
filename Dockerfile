@@ -31,9 +31,10 @@ ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/ScrivNetwork/scriv.git repo 
-
-COPY ./fontconfig.mk $BASEPREFIX/packages/fontconfig.mk
+  && git clone --depth 1 --branch $VER https://github.com/ScrivNetwork/scriv.git repo \
+  && git clone --depth 1 --branch master https://github.com/emercoin/emercoin.git repo2 \
+  && rm -rf ./repo/depends \
+  && cp -r ./repo2/depends ./repo/ 
 
 # Build source
 RUN mkdir -p /opt/blockchain/config \
@@ -41,7 +42,7 @@ RUN mkdir -p /opt/blockchain/config \
   && ln -s /opt/blockchain/config /root/.scriv \
   && cd $BASEPREFIX \
   && chmod +x config.* \
-  && make -j$ecores && make install 
+  && make NO_QT=1 -j4 && make install 
   
 RUN cd $PROJECTDIR \
   && chmod +x ./autogen.sh ./share/genbuild.sh \

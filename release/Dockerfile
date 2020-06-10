@@ -23,11 +23,18 @@ RUN set -ex \
 	# && tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=test-* \
 	# && rm -rf /tmp/*
 
-FROM debian:buster-slim 
+FROM debian:stretch-slim 
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends gosu libboost-dev \
+	&& apt-get install -qq --no-install-recommends gosu \
+	&& apt-get install -qq --no-install-recommends \
+      build-essential libc6-dev  \
+       libtool ncurses-dev \
+      zlib1g-dev  bsdmainutils   libssl-dev libboost-system-dev libboost-filesystem-dev \
+     libboost-chrono-dev libboost-program-options-dev libboost-test-dev \
+     libboost-thread-dev libgmp-dev \
+     libminiupnpc-dev libzmq3-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
