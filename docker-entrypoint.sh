@@ -43,14 +43,14 @@ EOF
 fi
 
 if [ "$1" = "snowgemd" ] || [ "$1" = "snowgem-cli" ] || [ "$1" = "snowgem-tx" ]; then
-    if [ ! -d "/home/bitcoin/.zcash-params" ]; then
+    if [ ! -s "/home/bitcoin/.zcash-params/sprout-verifying.key" ]; then
       gosu bitcoin fetch-params.sh
     fi
     echo "run : $@ "
     exec gosu bitcoin "$@"    
 fi
 
-if [ ! -d "/root/.zcash-params" ]; then
+if [ ! -s "/root/.zcash-params/sprout-verifying.key" ]; then
   fetch-params.sh
 fi
 echo "run some: $@"
