@@ -32,7 +32,7 @@ ENV HOST=x86_64-pc-linux-gnu
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
   && git clone --depth 1 --branch $VER https://github.com/ScrivNetwork/scriv.git repo \
-  && git clone --depth 1 --branch master https://github.com/emercoin/emercoin.git repo2 \
+  && git clone --depth 1 --branch master https://github.com/bitcoin/bitcoin.git repo2 \
   && rm -rf ./repo/depends \
   && cp -r ./repo2/depends ./repo/ 
 
