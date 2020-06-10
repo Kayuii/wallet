@@ -52,8 +52,7 @@ RUN mkdir -p /opt/blocknet \
 #   && make install 
 
 RUN cd $PROJECTDIR \
-  && ./zcutil/build.sh
-  
+  && CONFIGURE_FLAGS='--prefix=/' ./zcutil/build.sh --disable-tests && make install
 
 FROM debian:stretch-slim 
 

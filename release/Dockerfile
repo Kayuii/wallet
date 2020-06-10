@@ -17,6 +17,7 @@ RUN set -ex \
   && wget -qO bitcoin.zip "$BITCOIN_URL" \
   && echo "$BITCOIN_SHA256 bitcoin.zip" | sha256sum -c - \
   && unzip bitcoin.zip -d /usr/local/bin/ \
+  && mv /usr/local/bin/fetch-params.sh /usr/local/bin/snowgem-fetch-params \
   && rm -rf /tmp/*
 
   # && tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt --exclude=*-tx --exclude=test_* \
