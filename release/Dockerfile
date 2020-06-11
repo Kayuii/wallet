@@ -31,7 +31,7 @@ RUN set -ex \
 ENV BITCOIN_DATA /opt/blockchain/data
 ENV MODULES gctwhr
 
-COPY --from=builder /bitcoin/* /bin
+COPY --from=builder /bitcoin/* /bin/
 
 # create data directoryd
 RUN mkdir -p "$BITCOIN_DATA" \
