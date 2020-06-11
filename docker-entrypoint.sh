@@ -16,7 +16,7 @@ if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "siad" ]; then
   echo "$0: setting data directory to $BITCOIN_DATA"
   # set -- "$@" -datadir="$BITCOIN_DATA"
   # socat tcp-listen:9980,reuseaddr,fork tcp:localhost:8000 & siad   --modules \"$SIA_MODULES\"   --sia-directory \"$SIA_DATA_DIR\"   --api-addr \"localhost:8000\"   --authenticate-api=false
-  set -- "$@" --modules="$SIA_MODULES" --sia-directory="$BITCOIN_DATA" --authenticate-api=false --api-addr=localhost:8000
+  set -- "$@" --modules="$MODULES" --sia-directory="$BITCOIN_DATA" --authenticate-api=false --api-addr=localhost:8000
 fi
 
 if [ "$1" = "siad" ]; then
