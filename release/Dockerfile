@@ -6,7 +6,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget unzip socat \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 1.4.6
+ENV BITCOIN_VERSION 1.4.11
 ENV BITCOIN_URL https://sia.tech/releases/Sia-v${BITCOIN_VERSION}-linux-amd64.zip
 # ENV BITCOIN_SHA256 e11d241a8c726abd5c06a091726f0c8a4f92b3506388292b38ce41d7ba95b7c7
 # && echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
