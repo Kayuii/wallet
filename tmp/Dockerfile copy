@@ -82,4 +82,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 # Port, RPC, Test Port, Test RPC
 EXPOSE 12024 14022  18332  19332
 
-CMD ["digibyted", "-daemon=0", "-server=0"]
+CMD ["digibyted", "-printtoconsole"]

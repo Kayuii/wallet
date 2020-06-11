@@ -31,4 +31,4 @@ COPY ./release/docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 8332 8333 18332 18333
-CMD ["bitcoind"]
+CMD ["bitcoind", "-printtoconsole"]
