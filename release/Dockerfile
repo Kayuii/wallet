@@ -1,9 +1,8 @@
-FROM debian:buster-slim as builder
-
+FROM debian:stretch-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget unzip socat \
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gpg wget unzip \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_VERSION 1.4.11
@@ -20,18 +19,19 @@ RUN set -ex \
     && mv /tmp/bitcoin/Sia-v${BITCOIN_VERSION}-linux-amd64/siad /bitcoin/ \
 	&& rm -rf /tmp/*
 
-FROM debian:buster-slim
+FROM debian:stretch-slim
 
 RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends gosu curl socat \
+	&& apt-get install -qq --no-install-recommends gosu socat \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_DATA /opt/blockchain/data
+ENV MODULES gctwhr
 
-COPY --from=builder /bitcoin/ /bin
+COPY --from=builder /bitcoin/* /bin
 
 # create data directoryd
 RUN mkdir -p "$BITCOIN_DATA" \
@@ -41,7 +41,9 @@ RUN mkdir -p "$BITCOIN_DATA" \
 VOLUME  "$BITCOIN_DATA"
 WORKDIR  "$BITCOIN_DATA"
 
-COPY ./release/docker-entrypoint.sh /entrypoint.sh
+COPY ./docker-entrypoint.sh /entrypoint.sh
+
+HEALTHCHECK --interval=10s CMD ["./healthcheck.sh"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 9980 9981 9982
