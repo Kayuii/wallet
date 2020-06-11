@@ -23,12 +23,12 @@ RUN set -ex \
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.verge \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.verge
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.VERGE \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.VERGE
 VOLUME /opt/blockchain/data
 
 COPY ./docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 21102 20102 21104 21102
-CMD ["verged"]
+CMD ["verged", "-dynamic-network=false", "-printtoconsole"]
