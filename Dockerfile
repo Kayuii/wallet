@@ -58,10 +58,16 @@ RUN mkdir -p /opt/blocknet \
 
 RUN ls -al /usr/local/ 
 
+RUN mkdir -p /opt/blockchain/config \
+  && mkdir -p /opt/blockchain/data \
+  && ln -s /opt/blockchain/config /root/.verge \
+  && cd $BASEPREFIX \
+  && make NO_QT=1 -j8 && make install 
+
 RUN cd ${PROJECTDIR} && \
     ./autogen.sh && \
-    ./configure --without-gui --prefix=/usr/local && \
-    make -j${cores} && \
+    CONFIG_SITE=$BASEPREFIX/$HOST/share/config.site ./configure --without-gui --prefix=/usr/local && \
+    make -j1 && \
     make check && \
     strip src/zcoind && \
     strip src/zcoin-tx && \
