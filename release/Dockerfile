@@ -7,9 +7,9 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 0.21.2
-ENV BITCOIN_URL https://github.com/Bitcoin-ABC/bitcoin-abc/releases/download/v${BITCOIN_VERSION}/bitcoin-abc-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 596a2f8a1d23919a9daf00686df195a50857a8aaddc40726b2ff4b364cdb6afe
+ENV BITCOIN_VERSION 6.0.2
+ENV BITCOIN_URL https://github.com/vergecurrency/verge/releases/download/v${BITCOIN_VERSION}/verge-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
+ENV BITCOIN_SHA256 cdcb797d9bb11e9fe8062acd9ca46c5bafb02c4868f3c02fd417037584efd721
 
 # install bitcoin binaries
 RUN set -ex \
@@ -23,12 +23,12 @@ RUN set -ex \
 ENV BITCOIN_DATA /opt/blockchain/data
 RUN mkdir -p "$BITCOIN_DATA" \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.VERGE \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.VERGE
 VOLUME /opt/blockchain/data
 
 COPY ./release/docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 8332 8333 18332 18333
-CMD ["bitcoind"]
+EXPOSE 21102 20102 21104 21102
+CMD ["VERGEd"]

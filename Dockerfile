@@ -1,4 +1,4 @@
-# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch digibyte-v6.16.5.1
+# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch VERGE-v6.16.5.1
 # Build via docker:
 # docker build --build-arg cores=8 -t blocknetdx/dgb:latest .
 FROM ubuntu:bionic as builder
@@ -31,12 +31,12 @@ ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/digibyte/digibyte repo 
+  && git clone --depth 1 --branch $VER https://github.com/VERGE/VERGE repo 
 
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.digibyte \
+  && ln -s /opt/blockchain/config /root/.VERGE \
   && cd $BASEPREFIX \
   && make -j$ecores && make install 
   
@@ -49,9 +49,9 @@ RUN cd $PROJECTDIR \
     --without-gui --with-gui=no --with-utils --with-libs --with-daemon --enable-hardening --prefix=/ \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
-  && strip src/digibyted \
-  && strip src/digibyte-tx \
-  && strip src/digibyte-cli \
+  && strip src/VERGEd \
+  && strip src/VERGE-tx \
+  && strip src/VERGE-cli \
   && make install 
 
 FROM debian:stretch-slim 
@@ -65,12 +65,12 @@ RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 ENV BITCOIN_DATA=/opt/blockchain/data
 
-COPY --from=builder /bin/digibyte* /usr/local/bin/
+COPY --from=builder /bin/VERGE* /usr/local/bin/
 
 RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
-	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.digibyte \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.digibyte
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.VERGE \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.VERGE
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
@@ -80,6 +80,6 @@ VOLUME ["${BITCOIN_DATA}"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Port, RPC, Test Port, Test RPC
-EXPOSE 12024 14022  18332  19332
+EXPOSE 21102 20102 21104 21102
 
-CMD ["digibyted", "-daemon=0", "-server=0"]
+CMD ["VERGEd", "-daemon=0", "-server=0"]
