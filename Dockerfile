@@ -1,29 +1,20 @@
-# Dockerfile fork from https://github.com/blocknetdx/dockerimages.git branch verge-v6.16.5.1
-# Build via docker:
-# docker build --build-arg cores=8 -t blocknetdx/dgb:latest .
-FROM ubuntu:bionic as builder
+FROM alpine:3.8 as builder
 
 ARG cores=1
 ENV ecores=$cores
 ENV VER=v6.0.2
 
-RUN apt update \
-  && apt install -y --no-install-recommends \
-     software-properties-common \
-     ca-certificates \
-     wget curl git python vim \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache libressl boost libevent libtool libzmq boost-dev libressl-dev libevent-dev zeromq-dev
 
-RUN add-apt-repository ppa:bitcoin/bitcoin \
-  && apt update \
-  && apt install -y --no-install-recommends \
-     curl build-essential libtool autotools-dev automake \
-     python3 bsdmainutils cmake libevent-dev autoconf automake \
-     pkg-config libssl-dev libboost-system-dev libboost-filesystem-dev \
-     libboost-chrono-dev libboost-program-options-dev libboost-test-dev \
-     libboost-thread-dev libdb4.8-dev libdb4.8++-dev libgmp-dev \
-     libminiupnpc-dev libzmq3-dev \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apk add --no-cache git autoconf automake g++ make file curl wget
+
+RUN curl -L http://download.oracle.com/berkeley-db/db-4.8.30.tar.gz | tar -xz -C /tmp && \
+  cd /tmp/db-4.8.30/build_unix && \
+  ../dist/configure --enable-cxx --includedir=/usr/include/bdb4.8 --libdir=/usr/lib && \
+  make -j$(nproc) && make install && \
+  cd / && rm -rf /tmp/db-4.8.30
 
 ENV PROJECTDIR=/opt/blocknet/repo
 ENV BASEPREFIX=$PROJECTDIR/depends
@@ -34,11 +25,13 @@ RUN mkdir -p /opt/blocknet \
   && git clone --depth 1 --branch $VER https://github.com/vergecurrency/verge.git repo 
 
 # # Build source
-RUN mkdir -p /opt/blockchain/config \
-  && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.verge \
-  && cd $BASEPREFIX \
-  && make -j$ecores && make install 
+# RUN mkdir -p /opt/blockchain/config \
+#   && mkdir -p /opt/blockchain/data \
+#   && ln -s /opt/blockchain/config /root/.verge \
+#   && cd $BASEPREFIX \
+#   && make NO_QT=1 -j$(nproc) && make install 
+
+RUN git config --global http.sslVerify false
   
 RUN cd $PROJECTDIR \
   && chmod +x ./autogen.sh ./share/genbuild.sh \

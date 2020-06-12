@@ -29,6 +29,7 @@ logips=1
 rpcthreads=8 
 without-tor=true
 dynamic-network=false
+deprecatedrpc=accounts
 EOF
     chown bitcoin:bitcoin "$BITCOIN_DATA/VERGE.conf"
   fi
