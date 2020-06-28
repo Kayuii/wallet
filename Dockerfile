@@ -16,7 +16,7 @@ RUN apk update \
 
 RUN apk add --no-cache git autoconf automake g++ make file
 
-RUN git clone --depth 1 --branch $BITCOIN_VER https://github.com/digibyte/digibyte $BITCOIN_REPO
+RUN git clone --depth 1 --branch $BITCOIN_VER https://github.com/DigiByte-Core/digibyte.git $BITCOIN_REPO
 
 RUN	wget 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz' \
   && echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef  db-4.8.30.NC.tar.gz' | sha256sum -c
@@ -59,8 +59,8 @@ COPY --from=builder /opt/blockchain/bin/digibyte* /usr/local/bin/
 
 RUN mkdir -p $BITCOIN_ROOT \
   && mkdir -p $BITCOIN_DATA \
-  && ln -sfn $BITCOIN_DATA /home/bitcoin/.bitcoin \
-	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
+  && ln -sfn $BITCOIN_DATA /home/bitcoin/.digibyte \
+	&& chown -h bitcoin:bitcoin /home/bitcoin/.digibyte
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
@@ -72,4 +72,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 # Port, RPC, Test Port, Test RPC
 EXPOSE 12024 14022	18332	19332
 
-CMD ["digibyted", "-daemon=0", "-server=0"]
+CMD ["digibyted", "-printtoconsole"]

@@ -13,12 +13,13 @@ if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "digibyted" ]; then
 
   if [ ! -s "$BITCOIN_DATA/digibyte.conf" ]; then
     cat <<EOF > "$BITCOIN_DATA/digibyte.conf"
+printtoconsole=1
 datadir=$BITCOIN_DATA
 dbcache=256
 maxmempool=512
-port=8333
-rpcport=8332
-rpcbind=0.0.0.0:8332
+port=12024
+rpcport=14022
+rpcbind=0.0.0.0:14022
 listen=1
 server=1
 maxconnections=16
