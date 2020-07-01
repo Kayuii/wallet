@@ -27,8 +27,6 @@ rpcbind=127.0.0.1:20102
 logtimestamps=1 
 logips=1 
 rpcthreads=8 
-without-tor=true
-dynamic-network=false
 deprecatedrpc=accounts
 EOF
     chown bitcoin:bitcoin "$BITCOIN_DATA/VERGE.conf"
