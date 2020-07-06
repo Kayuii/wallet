@@ -17,4 +17,5 @@ Run the following command to start dcrwallet:
 ```
 docker exec -ti dcrd-1 dcrwallet dcrwallet -u rpcuser -P rpcpass
 ```
-reboot docker container, docker run dcrwallet dcrd together
+config dcrwallet privpass and reboot docker container, docker run dcrwallet dcrd together
+
