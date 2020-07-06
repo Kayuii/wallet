@@ -19,7 +19,6 @@ rpcuser=${BITCOIN_RPC_USER:-bitcoin}
 datadir=$BITCOIN_DATA 
 appdata=$BITCOIN_ROOT
 logdir=$BITCOIN_DATA/logs
-notls
 EOF
     chown bitcoin:bitcoin "$BITCOIN_ROOT/dcrd.conf"
   fi
@@ -43,7 +42,6 @@ appdata=$BITCOIN_DATA
 logdir=$BITCOIN_DATA/walletlogs
 password=${BITCOIN_RPC_PASSWORD:-password}
 username=${BITCOIN_RPC_USER:-bitcoin}
-noservertls
 # walletpass=${WALLET_PUB_PASS:-pubpass}
 # pass=${WALLET_PRIV_PASS:-privpass}
 EOF
