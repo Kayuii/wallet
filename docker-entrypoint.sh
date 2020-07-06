@@ -18,6 +18,7 @@ rpcpass=${BITCOIN_RPC_PASSWORD:-password}
 rpcuser=${BITCOIN_RPC_USER:-bitcoin}
 datadir=$BITCOIN_DATA 
 appdata=$BITCOIN_ROOT
+logdir=$BITCOIN_DATA/logs
 EOF
     chown bitcoin:bitcoin "$BITCOIN_ROOT/dcrd.conf"
   fi
@@ -37,8 +38,12 @@ EOF
 cat <<EOF > "$BITCOIN_ROOT/dcrwallet.conf"
 gaplimit=120000
 rpclisten=0.0.0.0:9110
+appdata=$BITCOIN_DATA
+logdir=$BITCOIN_DATA/walletlogs
 password=${BITCOIN_RPC_PASSWORD:-password}
 username=${BITCOIN_RPC_USER:-bitcoin}
+walletpass=${WALLET_PUB_PASS:-pubpass}
+pass=${WALLET_PRIV_PASS:-privpass}
 EOF
     chown bitcoin:bitcoin "$BITCOIN_ROOT/dcrwallet.conf"
   fi
@@ -63,6 +68,11 @@ EOF
 fi
 
 if [ "$1" = "dcrd" ] || [ "$1" = "dcrctl" ] ; then
+  
+  if [ -s "$BITCOIN_DATA/mainnet/wallet.db" ]; then
+    echo "run : dcrwallet "
+    su-exec bitcoin dcrwallet
+  fi
   echo "run : $@ "
   exec su-exec bitcoin "$@"
 fi
