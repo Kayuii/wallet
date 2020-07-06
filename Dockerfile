@@ -38,8 +38,9 @@ ENV HOST=x86_64-pc-linux-gnu
 
 RUN mkdir -p /opt/blocknet \
   && cd /opt/blocknet \
-  && git clone --depth 1 --branch $VER https://github.com/decred/dcrd.git repo \
-  && git clone --depth 1 --branch master https://github.com/decred/dcrctl.git repo1 
+  && git clone --depth 1 --branch release-v1.5.1 https://github.com/decred/dcrd.git repo \
+  && git clone --depth 1 --branch master https://github.com/decred/dcrctl.git repo1 \
+  && git clone --depth 1 --branch release-v1.5 https://github.com/decred/dcrwallet.git repo2
 
 # # Build source
 RUN mkdir -p /opt/blockchain/config \
@@ -49,6 +50,8 @@ RUN mkdir -p /opt/blockchain/config \
 RUN cd $PROJECTDIR \
   && CGO_ENABLED=0 GOOS=linux GO111MODULE=on go install . ./cmd/... \
   && cd ../repo1 \
+  && CGO_ENABLED=0 GOOS=linux GO111MODULE=on go install \
+  && cd ../repo2 \
   && CGO_ENABLED=0 GOOS=linux GO111MODULE=on go install
 
 FROM alpine:3.10.1
