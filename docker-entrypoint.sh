@@ -68,19 +68,12 @@ EOF
 fi
 
 if [ "$1" = "dcrd" ] || [ "$1" = "dcrctl" ] ; then
-  # if [ -s "$BITCOIN_DATA/mainnet/wallet.db" ]; then
-  #   echo "run : dcrwallet"
-  #   su-exec bitcoin dcrwallet
-  # fi
+  if [ -s "$BITCOIN_DATA/mainnet/wallet.db" ]; then
+    echo "run : dcrwallet"
+    su-exec bitcoin dcrwallet
+  fi
   echo "run : $@ "
   exec su-exec bitcoin "$@"
-fi
-
-if [ "$1" = "dcrwallet" ] ; then
-  if [ -s "$BITCOIN_DATA/mainnet/wallet.db" ]; then
-    echo "run : $@ "
-    su-exec bitcoin "$@"
-  fi
 fi
 
 echo "run some: $@"
