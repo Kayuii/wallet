@@ -71,6 +71,7 @@ RUN mkdir -p ${BITCOIN_DATA} \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.dcrd 
 
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY wait-for.sh /usr/local/bin/wait-for
 
 WORKDIR ${BITCOIN_ROOT}
 
