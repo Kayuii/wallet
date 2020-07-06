@@ -6,7 +6,7 @@ if [ $(echo "$1" | cut -c1) = "-" ]; then
   set -- dcrd "$@"
 fi
 
-if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "dcrd" ]; then
+if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "dcrd" ] ; then
 mkdir -p "$BITCOIN_ROOT"
 mkdir -p "$BITCOIN_DATA"
   
@@ -42,8 +42,8 @@ appdata=$BITCOIN_DATA
 logdir=$BITCOIN_DATA/walletlogs
 password=${BITCOIN_RPC_PASSWORD:-password}
 username=${BITCOIN_RPC_USER:-bitcoin}
-walletpass=${WALLET_PUB_PASS:-pubpass}
-pass=${WALLET_PRIV_PASS:-privpass}
+# walletpass=${WALLET_PUB_PASS:-pubpass}
+# pass=${WALLET_PRIV_PASS:-privpass}
 EOF
     chown bitcoin:bitcoin "$BITCOIN_ROOT/dcrwallet.conf"
   fi
@@ -68,13 +68,19 @@ EOF
 fi
 
 if [ "$1" = "dcrd" ] || [ "$1" = "dcrctl" ] ; then
-  
-  if [ -s "$BITCOIN_DATA/mainnet/wallet.db" ]; then
-    echo "run : dcrwallet "
-    su-exec bitcoin dcrwallet
-  fi
+  # if [ -s "$BITCOIN_DATA/mainnet/wallet.db" ]; then
+  #   echo "run : dcrwallet"
+  #   su-exec bitcoin dcrwallet
+  # fi
   echo "run : $@ "
   exec su-exec bitcoin "$@"
+fi
+
+if [ "$1" = "dcrwallet" ] ; then
+  if [ -s "$BITCOIN_DATA/mainnet/wallet.db" ]; then
+    echo "run : $@ "
+    su-exec bitcoin "$@"
+  fi
 fi
 
 echo "run some: $@"
