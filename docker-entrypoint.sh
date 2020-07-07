@@ -41,6 +41,7 @@ rpclisten=0.0.0.0:9110
 logdir=$BITCOIN_DATA/walletlogs
 password=${BITCOIN_RPC_PASSWORD:-password}
 username=${BITCOIN_RPC_USER:-bitcoin}
+tlscurve=P-521
 # walletpass=${WALLET_PUB_PASS:-pubpass}
 # pass=${WALLET_PRIV_PASS:-privpass}
 onetimetlskey=1
