@@ -56,7 +56,8 @@ RUN cd $PROJECTDIR \
 
 FROM alpine:3.10.1
 
-RUN apk add --no-cache ca-certificates su-exec
+RUN apk add --no-cache ca-certificates openssl su-exec \
+  && apk upgrade
 
 COPY --from=builder /go/bin/* /usr/local/bin/
 
