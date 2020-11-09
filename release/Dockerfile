@@ -7,9 +7,9 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 0.22.6
+ENV BITCOIN_VERSION 0.22.5
 ENV BITCOIN_URL https://github.com/Bitcoin-ABC/bitcoin-abc/releases/download/v${BITCOIN_VERSION}/bitcoin-abc-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 0e38732e86f6601debfbe00f1a3cb7f97b02cb13e17962f7c900f9f10e644f5f
+ENV BITCOIN_SHA256 6a1341a513d4ad66f3b2b6b6aa59f1df497a7d6975b30b3e88a6c153ac0b1c71
 
 # install bitcoin binaries
 RUN set -ex \
