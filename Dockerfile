@@ -2,7 +2,7 @@ FROM ubuntu:bionic as builder
 
 ARG cores=1
 ENV ecores=$cores
-ENV BCHSV_VER=v1.0.2
+ENV BCHSV_VER=v1.0.5
 
 RUN apt update \
   && apt install -y --no-install-recommends \

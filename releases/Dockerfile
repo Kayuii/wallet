@@ -5,9 +5,9 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 1.0.2
+ENV BITCOIN_VERSION 1.0.5
 ENV BITCOIN_URL https://download.bitcoinsv.io/bitcoinsv/${BITCOIN_VERSION}/bitcoin-sv-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
-ENV BITCOIN_SHA256 4f777d47c136194f0076a54b2241d41fc719d2e8739de559c7bf568e22a0b254
+ENV BITCOIN_SHA256 96f7c56c7ebd4ecb2dcd664297fcf0511169ac33eaf216407ebc49dae2535578
 
 RUN set -ex \
 	&& cd /tmp \
