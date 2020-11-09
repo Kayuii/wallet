@@ -2,6 +2,13 @@
 Official Bitcoin-SV Docker Images
 ===============================
 
+## Tags
+
+- `v1.0.5`, `latest` ([Dockerfile](https://github.com/Kayuii/wallet/tree/bchsv-v1.0.2/Dockerfile))
+- `v1.0.5-release` ([release/Dockerfile](https://github.com/Kayuii/wallet/tree/bchsv-release-v1.0.2/release/Dockerfile))
+- `v1.0.2`, `latest` ([Dockerfile](https://github.com/Kayuii/wallet/tree/bchsv-v1.0.2/Dockerfile))
+- `v1.0.2-release` ([release/Dockerfile](https://github.com/Kayuii/wallet/tree/bchsv-release-v1.0.2/release/Dockerfile))
+
 The docker images can be found on the docker hub: https://hub.docker.com/r/kayuii/bchsv
 fork from [BlocknetDX/dockerimages](https://github.com/BlocknetDX/dockerimages/)
 
