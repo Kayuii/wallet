@@ -1,6 +1,6 @@
 # build via docker:
 # docker build --build-arg cores=8 -t blocknetdx/eos:latest .
-FROM ubuntu:18.04
+FROM ubuntu:18.04 as builder
 
 ARG cores=2
 ENV ecores=$cores
@@ -18,7 +18,7 @@ RUN apt update \
 RUN git clone --depth 1 --branch v2.0.5 --recursive https://github.com/EOSIO/eos.git /root/eosio/eos \
       && cd /root/eosio/eos \
       && git submodule update --init --recursive \
-      && cd /root/eosio/eos/scripts 
+      && cd /root/eosio/eos/scripts
 
 # build for hub.docker.com 
 # system must have 7 or more Gigabytes of physical memory installed
@@ -31,8 +31,23 @@ RUN JOBS=$ecores /root/eosio/eos/scripts/eosio_build.sh -y -P
 
 # install EOSIO
 RUN /root/eosio/eos/scripts/eosio_install.sh -y \
-      && cd /root/eosio/eos/build && make clean \
-      && mkdir -p /root/.local/share/eosio/nodeos/config
+      && cd /root/eosio/eos/build && make clean 
+
+FROM ubuntu:18.04
+
+# COPY --from=builder /root/eosio /root/
+COPY --from=builder /root/eosio/2.0/bin /root/eosio/2.0/bin
+COPY --from=builder /root/eosio/2.0/etc /root/eosio/2.0/etc
+COPY --from=builder /root/eosio/2.0/include /root/eosio/2.0/include
+COPY --from=builder /root/eosio/2.0/lib /root/eosio/2.0/lib
+COPY --from=builder /root/eosio/2.0/share /root/eosio/2.0/share
+
+RUN apt update \
+    && apt install -y \
+      libssl1.1 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN mkdir -p /root/.local/share/eosio/nodeos/config
 
 RUN cd /root/.local/share/eosio/nodeos/config \
         && echo '{                                                              \n\
