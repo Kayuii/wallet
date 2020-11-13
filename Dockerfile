@@ -23,8 +23,8 @@ RUN git clone --depth 1 --branch v2.0.5 --recursive https://github.com/EOSIO/eos
 # build for hub.docker.com 
 # system must have 7 or more Gigabytes of physical memory installed
 # fix to remove limit
-RUN cd /root/eosio/eos/scripts \
-  && grep -rn "Your system must have" . |cut -d ':' -f 1 |sort |uniq |xargs sed -i "/Your system must have/d" 
+# RUN cd /root/eosio/eos/scripts \
+#   && grep -rn "Your system must have" . |cut -d ':' -f 1 |sort |uniq |xargs sed -i "/Your system must have/d" 
 
 # build EOSIO
 RUN JOBS=$ecores /root/eosio/eos/scripts/eosio_build.sh -y -P
