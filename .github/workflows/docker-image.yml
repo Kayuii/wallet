@@ -1,0 +1,82 @@
+name: for eos (nodeos)
+env:
+  DOCKER_REG: kayuii/eos
+on:
+  push:
+    branches: [ eos ]
+    tags:
+    - 'eos-v*'
+  pull_request:
+    branches: [ eos ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Switch
+      run: |
+        # Strip git ref prefix from version
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+        echo $VERSION
+        # Strip "v" prefix from tag name
+        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^omnicore-v//')
+        echo $VERSION
+        # Use Docker `latest` tag convention
+        [ "$VERSION" == "eos" ] && VERSION=latest
+        echo IMAGE_ID=$DOCKER_REG >> $GITHUB_ENV
+        echo VERSION=$VERSION >> $GITHUB_ENV
+    - name: Checkout
+      uses: actions/checkout@v2
+    # 设置qemu来编译多个平台的镜像
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    # 设置buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    # 登陆dockerhub
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: |
+          ${{ env.DOCKER_REG }}:${{ env.VERSION }}
+
+  # build-release:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.event_name == 'push' && github.event.action == 'tags' }}
+  #   steps:
+  #   - name: Switch
+  #     run: |
+  #       # Strip git ref prefix from version
+  #       VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+  #       echo $VERSION
+  #       # Strip "v" prefix from tag name
+  #       [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^omnicore-v//')
+  #       echo $VERSION
+  #       # Use Docker `latest` tag convention
+  #       [ "$VERSION" == "usdt" ] && VERSION=latest
+  #       echo IMAGE_ID=$DOCKER_REG >> $GITHUB_ENV
+  #       echo VERSION=$VERSION >> $GITHUB_ENV
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+  #   # 登陆dockerhub
+  #   - name: Login to DockerHub
+  #     uses: docker/login-action@v1
+  #     with:
+  #       username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #       password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #   - name: Build and push
+  #     uses: docker/build-push-action@v2
+  #     with:
+  #       context: .
+  #       file: ./release/Dockerfile
+  #       push: true
+  #       tags: |
+  #         ${{ env.DOCKER_REG }}:release-v${{ env.VERSION }}
