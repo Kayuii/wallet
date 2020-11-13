@@ -7,7 +7,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BITCOIN_VERSION 0.9.0
+ENV BITCOIN_VERSION 0.6.0
 ENV BITCOIN_URL https://github.com/OmniLayer/omnicore/releases/download/v${BITCOIN_VERSION}/omnicore-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz
 ENV BITCOIN_SIG https://github.com/OmniLayer/omnicore/releases/download/v${BITCOIN_VERSION}/omnicore-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz.sig
 # ENV BITCOIN_SHA256 e11d241a8c726abd5c06a091726f0c8a4f92b3506388292b38ce41d7ba95b7c7
